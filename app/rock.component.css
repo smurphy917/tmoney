@@ -1,0 +1,11 @@
+#date{
+    width: 100%;
+    font-size: 7pt;
+}
+#outline{
+    border: 1px solid black;
+    box-sizing: border-box; 
+}
+.rock-data-view{
+    position:absolute;
+}

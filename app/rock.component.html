@@ -1,0 +1,8 @@
+<div id="outline">
+<!--div class="rock-data-view" id="delta">{{rock.delta}}</div-->
+<svg id="rock-{{rock.id}}" preserveAspectRatio="none" [ngStyle]="{'height' : stHeight, 'width' : scaleX * rock.timeSpan}" [attr.viewBox]="'0 ' + -scaleY * (vbHeight + floor + vertBuffer) + ' ' + rock.timeSpan*scaleX + ' ' +Math.abs(vbHeight)*scaleY">
+    <path [attr.d]="path" stroke="black" fill="transparent"/>
+    <path [attr.d]="zeroPath" stroke="black" fill="transparent"/>
+</svg>
+<div id="date">{{rock.date | date}}</div>
+</div>

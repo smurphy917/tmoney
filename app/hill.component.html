@@ -1,0 +1,13 @@
+<!--div class="outer-container">
+    <div class="inner-container"-->
+        <div class="content">
+            <rock (click)="selectRock(rock)" [floor]="floor" [ceiling]="ceiling" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [localRocks]="localRocks(rocks,i)" [rocks]="copyRocks(rocks)" [rock]="rock"></rock>
+        </div>
+        <div *ngIf="selectedRock" class="input">
+            <label>Rock Delta</label><input type="number" [(ngModel)]="selectedRock.delta">
+        </div>
+        <div>{{JSON.stringify(rocks)}}</div>
+    <!--/div>
+    <div class="window">
+    </div>
+</div-->
