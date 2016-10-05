@@ -7,6 +7,7 @@ import { ROCKS } from './rocks'
 //import { RequirejsService } from './requirejs.service';
 
 export const CURVE_POINTS = 5;
+const CONTAINER_HEIGHT = 180;
 
 @Component({
     selector: 'the-hill',
@@ -43,6 +44,15 @@ export class HillComponent implements OnInit{
         });
         return minFloor;
     }
+
+    get verticalBuffer():number{
+        return 0.1 * (this.ceiling - this.floor);
+    }
+
+    get scale():number{
+        return CONTAINER_HEIGHT / (this.ceiling - this.floor);
+    }
+
     /*
     setFloor(){
         let floor = this.rocks[0].baseHeight || 0, minFloor = 0;

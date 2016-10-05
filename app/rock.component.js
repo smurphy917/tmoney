@@ -15,14 +15,11 @@ var curve_function_1 = require('./curve.function');
 var hill_component_1 = require('./hill.component');
 var vertScale = 20;
 var horizScale = 40;
-var VERTICAL_BUFFER = 1;
 var RockComponent = (function () {
     function RockComponent() {
         this.scaleX = horizScale;
-        this.scaleY = vertScale;
         this.init = false;
         this.Math = Math;
-        this.vertBuffer = VERTICAL_BUFFER;
     }
     RockComponent.prototype.ngOnChanges = function (changes) {
         if (!this.init) {
@@ -49,27 +46,21 @@ var RockComponent = (function () {
         var localRocks = this.rocks.slice(index > lMin - 1 ? index - lMin : 0, index + lMin + 1);
         index = localRocks.findIndex(function (r) { return r.id === _this.rock.id; });
         var controlPts = curve_function_1.ControlPoints(localRocks);
-        this.vbHeight = Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta) - this.floor;
-        this.stHeight = ((this.vbHeight - this.floor) / this.ceiling) * 180;
-        if (this.rock.id === 5) {
-            console.log("delta: " + this.rock.delta);
-            console.log("base: " + this.rock.baseHeight);
-            console.log("floor: " + this.floor);
-            console.log("vbHeight: " + this.vbHeight);
-        }
-        console.log("height ratio: " + (this.vbHeight / this.stHeight));
+        this.canvasHeight = (2 * this.verticalBuffer) + Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta) - this.floor;
+        this.canvasOrigin = -(this.verticalBuffer + Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta));
+        this.height = this.canvasHeight * this.scale;
         var scaledCtrlPts = {
             p1: [
                 (1 / 3) * this.rock.timeSpan * this.scaleX,
-                -controlPts[index].p1[1] * this.scaleY
+                -controlPts[index].p1[1]
             ],
             p2: [
                 (2 / 3) * this.rock.timeSpan * this.scaleX,
-                -controlPts[index].p2[1] * this.scaleY
+                -controlPts[index].p2[1]
             ]
         };
-        var startY = -this.rock.baseHeight * this.scaleY;
-        var maxY = -(this.rock.baseHeight * this.scaleY + this.rock.delta * this.scaleY);
+        var startY = -this.rock.baseHeight;
+        var maxY = -(this.rock.baseHeight + this.rock.delta);
         var maxX = this.rock.timeSpan * this.scaleX;
         var M = [0, startY];
         var C3 = [maxX, maxY];
@@ -95,7 +86,15 @@ var RockComponent = (function () {
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Number)
+    ], RockComponent.prototype, "scale", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
     ], RockComponent.prototype, "ceiling", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
+    ], RockComponent.prototype, "verticalBuffer", void 0);
     RockComponent = __decorate([
         core_1.Component({
             selector: 'rock',

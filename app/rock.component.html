@@ -1,7 +1,18 @@
 <div id="outline">
 <!--div class="rock-data-view" id="delta">{{rock.delta}}</div-->
-<svg id="rock-{{rock.id}}" preserveAspectRatio="none" [ngStyle]="{'height' : stHeight, 'width' : scaleX * rock.timeSpan}" [attr.viewBox]="'0 ' + -scaleY * (vbHeight + floor + vertBuffer) + ' ' + rock.timeSpan*scaleX + ' ' +Math.abs(vbHeight)*scaleY">
-    <path [attr.d]="path" stroke="black" fill="transparent"/>
+<svg id="rock-{{rock.id}}" preserveAspectRatio="none" [ngStyle]="{'height' : height, 'width' : scaleX * rock.timeSpan}" [attr.viewBox]="'0 ' + canvasOrigin + ' ' + rock.timeSpan*scaleX + ' ' + canvasHeight">
+    <path id="path-{{rock.id}}" [attr.d]="path" stroke="black" fill="transparent"/>
+    <animate
+        xlink:href="path-{{rock.id}}"
+        attributeName="d"
+        fill="freeze"
+        calcMode="spline"
+        keySplines="0.39 0.575 0.565 1"
+        dur="500ms"
+        begin="0"
+        [attr.from]="path"
+        [attr.to]="newPath"
+        [attr.onend]="endAnimation()">
     <path [attr.d]="zeroPath" stroke="black" fill="transparent"/>
 </svg>
 <div id="date">{{rock.date | date}}</div>

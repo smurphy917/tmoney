@@ -1,7 +1,7 @@
 <!--div class="outer-container">
     <div class="inner-container"-->
         <div class="content">
-            <rock (click)="selectRock(rock)" [floor]="floor" [ceiling]="ceiling" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [localRocks]="localRocks(rocks,i)" [rocks]="copyRocks(rocks)" [rock]="rock"></rock>
+            <rock (click)="selectRock(rock)" [verticalBuffer]="verticalBuffer" [floor]="floor" [scale]="scale" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [localRocks]="localRocks(rocks,i)" [rocks]="copyRocks(rocks)" [rock]="rock"></rock>
         </div>
         <div *ngIf="selectedRock" class="input">
             <label>Rock Delta</label><input type="number" [(ngModel)]="selectedRock.delta">

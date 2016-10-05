@@ -7,7 +7,6 @@ import { CURVE_POINTS } from './hill.component'
 
 const vertScale = 20;
 const horizScale = 40;
-const VERTICAL_BUFFER = 1;
 
 @Component({
     selector: 'rock',
@@ -31,18 +30,23 @@ export class RockComponent implements OnChanges{
     floor: number;
 
     @Input()
-    ceiling:number;
+    scale: number;
 
-    stHeight:number;
-    vbHeight: number;
+    @Input()
+    ceiling: number;
+
+    @Input()
+    verticalBuffer: number;
+
+    height:number;
+    canvasHeight: number;
+    canvasOrigin: number;
     path: string;
     zeroPath: string;
     scaleX = horizScale;
-    scaleY = vertScale;
     init = false;
     _rocksCopy: Rock[];
     Math = Math;
-    vertBuffer = VERTICAL_BUFFER;
 
     
     ngOnChanges(changes){
@@ -72,27 +76,22 @@ export class RockComponent implements OnChanges{
         index = localRocks.findIndex(r => r.id === this.rock.id);
         let controlPts = ControlPoints(localRocks);
         
-        this.vbHeight = Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta) - this.floor;
-        this.stHeight = ((this.vbHeight - this.floor)/this.ceiling) * 180;
-        if(this.rock.id===5){
-            console.log("delta: " + this.rock.delta);
-            console.log("base: " + this.rock.baseHeight);
-            console.log("floor: " + this.floor);
-            console.log("vbHeight: " + this.vbHeight);
-        }
-        console.log("height ratio: "+ (this.vbHeight/this.stHeight));
+        this.canvasHeight = (2 * this.verticalBuffer) + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta) - this.floor;
+        this.canvasOrigin = -(this.verticalBuffer + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta));
+        this.height = this.canvasHeight * this.scale;
+
         let scaledCtrlPts = {
             p1: [
                 (1/3) * this.rock.timeSpan * this.scaleX,
-                -controlPts[index].p1[1] * this.scaleY
+                -controlPts[index].p1[1]
             ],
             p2: [
                 (2/3) * this.rock.timeSpan * this.scaleX,
-                -controlPts[index].p2[1] * this.scaleY
+                -controlPts[index].p2[1]
             ]
         };
-        let startY = - this.rock.baseHeight * this.scaleY;
-        let maxY = - (this.rock.baseHeight * this.scaleY + this.rock.delta * this.scaleY);
+        let startY = - this.rock.baseHeight;
+        let maxY = - (this.rock.baseHeight + this.rock.delta);
         let maxX = this.rock.timeSpan * this.scaleX;
         let M = [0, startY];
         let C3 = [maxX, maxY];

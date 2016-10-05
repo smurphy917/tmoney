@@ -13,6 +13,7 @@ var rock_component_1 = require('./rock.component');
 var rocks_1 = require('./rocks');
 //import { RequirejsService } from './requirejs.service';
 exports.CURVE_POINTS = 5;
+var CONTAINER_HEIGHT = 180;
 var HillComponent = (function () {
     function HillComponent() {
         //constructor(private requirejs: RequirejsService){}
@@ -40,6 +41,20 @@ var HillComponent = (function () {
                 minFloor = Math.min(minFloor, floor);
             });
             return minFloor;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HillComponent.prototype, "verticalBuffer", {
+        get: function () {
+            return 0.1 * (this.ceiling - this.floor);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HillComponent.prototype, "scale", {
+        get: function () {
+            return CONTAINER_HEIGHT / (this.ceiling - this.floor);
         },
         enumerable: true,
         configurable: true
