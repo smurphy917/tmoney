@@ -9,7 +9,8 @@
     '@angular':                   'node_modules/@angular',
     'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     'rxjs':                       'node_modules/rxjs',
-    'jquery':                     'ext/jquery'
+    'snapsvg':                    'node_modules/snapsvg',
+    'jquery':                     'node_modules/jquery'
   };
   // packages tells the System loader how to load when no filename and/or no extension
   var packages = {
@@ -17,7 +18,8 @@
     'rxjs':                       { defaultExtension: 'js' },
     'angular2-in-memory-web-api': { main: 'index.js', defaultExtension: 'js' },
     'requirejs':                  { defaultExtension: 'js' },
-    'jquery':                     { main: 'jquery-3.1.0.min', defaultExtension:'js'}
+    'jquery':                     { main: 'src/jquery.js', defaultExtension:'js'},
+    'snapsvg':                    { main: 'dist/snap.svg.js', defaultExtension: 'js' }
   };
   var ngPackageNames = [
     'common',

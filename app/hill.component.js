@@ -19,15 +19,15 @@ var HillComponent = (function () {
         //constructor(private requirejs: RequirejsService){}
         this.JSON = JSON;
         this.rocks = rocks_1.ROCKS;
+        this.selectedRockIndex = -1;
     }
     Object.defineProperty(HillComponent.prototype, "ceiling", {
         get: function () {
             var base = this.rocks[0].baseHeight || 0, ceiling = base + this.rocks[0].delta, max = ceiling;
-            this.rocks.forEach(function (r) {
+            Object.values(this.rocks).forEach(function (r) {
                 ceiling = ceiling + r.delta;
                 max = Math.max(max, ceiling);
             });
-            console.log("Result ceiling: " + max);
             return max;
         },
         enumerable: true,
@@ -36,7 +36,7 @@ var HillComponent = (function () {
     Object.defineProperty(HillComponent.prototype, "floor", {
         get: function () {
             var floor = this.rocks[0].baseHeight || 0, minFloor = 0;
-            this.rocks.forEach(function (r) {
+            Object.values(this.rocks).forEach(function (r) {
                 floor = floor + r.delta;
                 minFloor = Math.min(minFloor, floor);
             });
@@ -86,7 +86,7 @@ var HillComponent = (function () {
         return rocks.slice();
     };
     HillComponent.prototype.selectRock = function (rock) {
-        this.selectedRock = rock;
+        this.selectedRockIndex = this.rocks.findIndex(function (r) { return r.id === rock.id; });
     };
     HillComponent.prototype.ngOnInit = function () {
         //this.setFloor();

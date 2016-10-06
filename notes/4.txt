@@ -1,0 +1,12 @@
+<animate
+    xlink:href="path-{{rock.id}}"
+    attributeName="d"
+    fill="freeze"
+    calcMode="spline"
+    keySplines="0.39 0.575 0.565 1"
+    dur="500ms"
+    begin="0"
+    [attr.from]="path"
+    [attr.to]="newPath"
+    [attr.onend]="endAnimation()">
+

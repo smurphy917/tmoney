@@ -9,14 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var PathDDirective = (function () {
-    function PathDDirective(el, renderer) {
+var SVGAnimateOnEnd = (function () {
+    function SVGAnimateOnEnd(el, renderer) {
         this.el = el;
         this.renderer = renderer;
     }
-    Object.defineProperty(PathDDirective.prototype, "ngD", {
-        set: function (ngD) {
-            this.renderer.setElementAttribute(this.el.nativeElement, 'd', ngD);
+    Object.defineProperty(SVGAnimateOnEnd.prototype, "onend_c", {
+        set: function (onend_c) {
+            this.renderer.setElementAttribute(this.el.nativeElement, 'onend', onend_c);
         },
         enumerable: true,
         configurable: true
@@ -25,14 +25,14 @@ var PathDDirective = (function () {
         core_1.Input(), 
         __metadata('design:type', Object), 
         __metadata('design:paramtypes', [Object])
-    ], PathDDirective.prototype, "ngD", null);
-    PathDDirective = __decorate([
+    ], SVGAnimateOnEnd.prototype, "onend_c", null);
+    SVGAnimateOnEnd = __decorate([
         core_1.Directive({
-            selector: '[ngD]'
+            selector: '(onend_c)'
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef, core_1.Renderer])
-    ], PathDDirective);
-    return PathDDirective;
+    ], SVGAnimateOnEnd);
+    return SVGAnimateOnEnd;
 }());
-exports.PathDDirective = PathDDirective;
+exports.SVGAnimateOnEnd = SVGAnimateOnEnd;
 //# sourceMappingURL=pathD.directive.js.map

@@ -1,0 +1,11 @@
+topBuffer
+    fixed
+contentHeight
+    (max(baseHeight, baseHeight + delta) + floor) * scale
+bottomBuffer
+    fixed
+
+scale : ratio of tallest (delta + floor) to fixed height container
+
+canvasOrigin
+    

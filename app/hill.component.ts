@@ -21,24 +21,23 @@ export class HillComponent implements OnInit{
     //constructor(private requirejs: RequirejsService){}
     JSON = JSON;
     rocks: Rock[] = ROCKS;
-    selectedRock: Rock;
+    selectedRockIndex: number = -1;
     height: number;
 
     get ceiling(){
         let base = this.rocks[0].baseHeight || 0,
         ceiling = base + this.rocks[0].delta,
         max = ceiling;
-        this.rocks.forEach(function(r){
+        Object.values(this.rocks).forEach(function(r){
             ceiling = ceiling + r.delta;
             max = Math.max(max,ceiling);
         });
-        console.log("Result ceiling: " + max);
         return max;
     }
     
     get floor(){
         let floor = this.rocks[0].baseHeight || 0, minFloor = 0;
-        this.rocks.forEach(function(r){
+        Object.values(this.rocks).forEach(function(r){
             floor = floor + r.delta;
             minFloor = Math.min(minFloor,floor);
         });
@@ -82,7 +81,7 @@ export class HillComponent implements OnInit{
     }
 
     selectRock(rock: Rock){
-        this.selectedRock = rock;
+        this.selectedRockIndex = this.rocks.findIndex(r => r.id === rock.id);
     }
 
     ngOnInit(){
