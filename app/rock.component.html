@@ -1,20 +1,19 @@
 <div id="outline">
-<!--div class="rock-data-view" id="delta">{{rock.delta}}</div-->
-<svg id="rock-{{rock.id}}" preserveAspectRatio="none" [ngStyle]="{'height' : height, 'width' : scaleX * rock.timeSpan}" [attr.viewBox]="'0 ' + canvasOrigin + ' ' + rock.timeSpan*scaleX + ' ' + canvasHeight">
-    <path #rockPath id="path-{{rock.id}}" [attr.d]="path" stroke="black" fill="transparent">
-        <!--animate #rockPathAnimate
-            *ngIf="animateToPath"
-            attributeName="d"
-            fill="freeze"
-            calcMode="spline"
-            keySplines="0 0 0.58 1"
-            dur="500ms"
-            begin="0"
-            (onend_c)="endAnimation"
-            onend="console.log('end');"
-            [attr.values]="path + '; ' + animateToPath"/-->
-    </path>
-    <path [attr.d]="zeroPath" stroke="black" fill="transparent"/>
-</svg>
-<div id="date">{{rock.date | date}}</div>
+    <svg #rockSVG id="rock-{{rock.id}}" preserveAspectRatio="none" [attr.height]="height" [attr.width]="scaleX * rock.timeSpan" [attr.viewBox]="'0 ' + (canvasOrigin||0) + ' ' + rock.timeSpan*scaleX + ' ' + (canvasHeight||0)">
+        <path class="graph-line" #rockPath id="path-{{rock.id}}" [attr.d]="path" stroke="black" fill="transparent">
+            <!--animate #rockPathAnimate
+                *ngIf="animateToPath"
+                attributeName="d"
+                fill="freeze"
+                calcMode="spline"
+                keySplines="0 0 0.58 1"
+                dur="500ms"
+                begin="0"
+                (onend_c)="endAnimation"
+                onend="console.log('end');"
+                [attr.values]="path + '; ' + animateToPath"/-->
+        </path>
+        <path class="zero-line" [attr.d]="zeroPath" stroke="black" fill="transparent"/>
+    </svg>
+    <div id="date">{{rock.date | date}}</div>
 </div>

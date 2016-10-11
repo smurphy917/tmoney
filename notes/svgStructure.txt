@@ -1,0 +1,33 @@
++------------->*   ^      ^
+top buffer     |   |      |
++------------->|   |      |
+               |   |      |
+head           |   |      |
+               |   |      |
++------------->|   |      |
+               | origin   | 
+               |   |      |
+               |   |      |
+max            |   |   height
+               |   |      |
+               |   |      |
+               |   |      |
++------------->|   v      |
+               |          |
+-floor         |          |
+               |          |
++------------->|          |   
+bottom buffer  |          |    
++------------->*          v
+
+
+max = max(baseHeight,baseHeight + delta)
+head is the difference between ceiling and tha max of this element
+    i.e head + max = ceiling
+
+origin = top buffer + ceiling;
+height = top buffer + ceiling + (-floor) + bottom buffer
+
+
+if floor > zero, zero path at zero
+else zero path at floor

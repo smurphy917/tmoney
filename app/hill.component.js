@@ -10,16 +10,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var rock_component_1 = require('./rock.component');
-var rocks_1 = require('./rocks');
+var rock_service_1 = require('./rock.service');
+var rockEditor_component_1 = require('./rockEditor.component');
 //import { RequirejsService } from './requirejs.service';
 exports.CURVE_POINTS = 5;
-var CONTAINER_HEIGHT = 180;
+var CONTAINER_HEIGHT = 200;
 var HillComponent = (function () {
-    function HillComponent() {
-        //constructor(private requirejs: RequirejsService){}
+    function HillComponent(rockService) {
+        this.rockService = rockService;
         this.JSON = JSON;
-        this.rocks = rocks_1.ROCKS;
         this.selectedRockIndex = -1;
+        this.rockAnimationIds = new Array();
+        this.rockAnimations = new Array();
+        this.rockAnimationElems = new Array();
     }
     Object.defineProperty(HillComponent.prototype, "ceiling", {
         get: function () {
@@ -54,11 +57,57 @@ var HillComponent = (function () {
     });
     Object.defineProperty(HillComponent.prototype, "scale", {
         get: function () {
-            return CONTAINER_HEIGHT / (this.ceiling - this.floor);
+            return CONTAINER_HEIGHT / (this.ceiling - this.floor + 2 * this.verticalBuffer);
         },
         enumerable: true,
         configurable: true
     });
+    HillComponent.prototype.redraw = function () {
+    };
+    HillComponent.prototype.animate = function () {
+        //console.debug("Animation triggered");
+        //console.debug("Elements:"); console.debug(this.rockAnimationElems);
+        //console.debug("Animations:"); console.debug(this.rockAnimations);
+        var Snap = require("snapsvg");
+        var set = Snap(this.rockAnimationElems);
+        set.animate(this.rockAnimations);
+        this.rockAnimationElems = new Array();
+        this.rockAnimations = new Array();
+        this.rockAnimationIds = new Array();
+        /*
+        for (let a of this.rockAnimationElems){
+            for (let b of a){
+                set.push(b);
+            }
+        }
+        let animations = [];
+        for (let a of this.rockAnimations){
+            for (let b of a){
+                animations.push(b);
+            }
+        }
+        console.log("elems / animations");
+        console.log(animations);
+        console.log(this.rockAnimationElems);
+        set.animate(animations);
+        */
+    };
+    HillComponent.prototype.animationTrigger = function (event) {
+        //console.debug("Animation Trigger Fired: ");
+        //console.debug(event);
+        for (var _i = 0, _a = event.animationElements; _i < _a.length; _i++) {
+            var elem = _a[_i];
+            this.rockAnimationElems.push(elem);
+        }
+        for (var _b = 0, _c = event.animations; _b < _c.length; _b++) {
+            var animation = _c[_b];
+            this.rockAnimations.push(animation);
+        }
+        this.rockAnimationIds.push(event.rockId);
+        if (this.rockAnimationIds.length === this.rocks.length) {
+            this.animate();
+        }
+    };
     /*
     setFloor(){
         let floor = this.rocks[0].baseHeight || 0, minFloor = 0;
@@ -139,15 +188,16 @@ var HillComponent = (function () {
         };
         require("jquery");
         $(".content").draggable();
+        this.rocks = this.rockService.generateRocks(20);
     };
     HillComponent = __decorate([
         core_1.Component({
             selector: 'the-hill',
             templateUrl: 'app/hill.component.html',
             styleUrls: ['app/hill.component.css'],
-            directives: [rock_component_1.RockComponent]
+            directives: [rock_component_1.RockComponent, rockEditor_component_1.RockEditorComponent]
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [rock_service_1.RockService])
     ], HillComponent);
     return HillComponent;
 }());

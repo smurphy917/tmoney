@@ -382,7 +382,9 @@ Snap.plugin(function (Snap, Element, Paper, glob, Fragment) {
             vb = vb.split(separator);
             return Snap._.box(+vb[0], +vb[1], +vb[2], +vb[3]);
         } else {
-            return;
+            //return;
+            //SM - Changed on 10/6/16 - default to 0-sized box when attribute doesn't exist
+            return Snap._.box(0,0,0,0);
         }
     })(-1);
     eve.on("snap.util.getattr.points", function () {

@@ -4,25 +4,31 @@ import { DomSanitizationService } from '@angular/platform-browser';
 import { RockComponent } from './rock.component'
 import { Rock } from './rock';
 import { ROCKS } from './rocks'
+import { RockService } from './rock.service';
+import { RockEditorComponent } from './rockEditor.component';
 //import { RequirejsService } from './requirejs.service';
 
 export const CURVE_POINTS = 5;
-const CONTAINER_HEIGHT = 180;
+const CONTAINER_HEIGHT = 200;
 
 @Component({
     selector: 'the-hill',
     templateUrl: 'app/hill.component.html',
     styleUrls: ['app/hill.component.css'],
-    directives: [RockComponent]
+    directives: [RockComponent, RockEditorComponent]
 })
 
 export class HillComponent implements OnInit{
 
-    //constructor(private requirejs: RequirejsService){}
+    constructor(private rockService:RockService){}
+
     JSON = JSON;
-    rocks: Rock[] = ROCKS;
+    rocks: Rock[];// = ROCKS;
     selectedRockIndex: number = -1;
     height: number;
+    rockAnimationIds:number[] = new Array<number>();
+    rockAnimations:any[] = new Array<any>();
+    rockAnimationElems:Element[] = new Array<Element>();
 
     get ceiling(){
         let base = this.rocks[0].baseHeight || 0,
@@ -49,7 +55,55 @@ export class HillComponent implements OnInit{
     }
 
     get scale():number{
-        return CONTAINER_HEIGHT / (this.ceiling - this.floor);
+        return CONTAINER_HEIGHT / (this.ceiling - this.floor + 2 * this.verticalBuffer);
+    }
+
+    redraw(){
+
+    }
+    
+    animate(){
+        //console.debug("Animation triggered");
+        //console.debug("Elements:"); console.debug(this.rockAnimationElems);
+        //console.debug("Animations:"); console.debug(this.rockAnimations);
+        let Snap = require("snapsvg");
+        let set = Snap(this.rockAnimationElems);
+        set.animate(this.rockAnimations);
+        this.rockAnimationElems = new Array<Element>();
+        this.rockAnimations = new Array<any>();
+        this.rockAnimationIds = new Array<number>();
+        /*
+        for (let a of this.rockAnimationElems){
+            for (let b of a){
+                set.push(b);
+            }
+        }
+        let animations = [];
+        for (let a of this.rockAnimations){
+            for (let b of a){
+                animations.push(b);
+            }
+        }
+        console.log("elems / animations");
+        console.log(animations);
+        console.log(this.rockAnimationElems);
+        set.animate(animations);
+        */
+    }
+
+    animationTrigger(event){
+        //console.debug("Animation Trigger Fired: ");
+        //console.debug(event);
+        for(let elem of event.animationElements){
+            this.rockAnimationElems.push(elem);
+        }
+        for(let animation of event.animations){
+            this.rockAnimations.push(animation);
+        }
+        this.rockAnimationIds.push(event.rockId);
+        if (this.rockAnimationIds.length === this.rocks.length){ //2 events per rock
+            this.animate();
+        }
     }
 
     /*
@@ -146,5 +200,6 @@ export class HillComponent implements OnInit{
         require("jquery");
         $(".content").draggable();
         
+        this.rocks = this.rockService.generateRocks(20);
     }
 }

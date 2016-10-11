@@ -1,0 +1,38 @@
+<div *ngIf="rock">
+    <div class="editor-header">
+        <label>{{rock.date | date}}</label>
+    </div>
+    <div *ngIf="rock.credits" class="credits">
+        <label>Income</label>
+        <ul>
+            <li *ngFor="let credit of rock.credits;let i = index;">
+                <div class="open-editing" *ngIf="editingType === 'credit' && editingIndex === i">
+                    <input [(ngModel)]="rock.credits[i]" type="number"/>
+                    <a href="#" (click)="save()">Save</a>
+                </div>
+                <div class="open-editing" *ngIf="editingType !== 'credit' || editingIndex !== i">
+                    <a href="#" (click)="edit('credit',i)">Edit</a>
+                    <span>{{credit | currency}}</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div *ngIf="rock.debits" class="debits">
+        <label>Expenses</label>
+        <ul>
+            <li *ngFor="let debit of rock.debits;let i = index;">
+                <div class="open-editing" *ngIf="editingType === 'debit' && editingIndex === i">
+                    <input [(ngModel)]="rock.debits[i]" type="number"/>
+                    <a href="#" (click)="save()">Save</a>
+                </div>
+                <div class="open-editing" *ngIf="editingType !== 'debit' || editingIndex !== i">
+                    <a href="#" (click)="edit('debit',i)">Edit</a>
+                    <span>{{debit | currency}}</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="summary">
+        <label>Net:</label><span>{{rock.delta | currency}}</span>
+    </div>
+</div>

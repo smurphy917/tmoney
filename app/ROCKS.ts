@@ -1,11 +1,16 @@
 import { Rock } from './rock';
 
 export const ROCKS: Rock[] = [
-
+    /*
     {
         id: 1,
         timeSpan: 1,
         delta: 148,
+        credits:[
+            122,
+            26
+        ],
+        debits:[],
         date: new Date(2016, 10, 1),
         baseHeight: null
     },
@@ -13,6 +18,12 @@ export const ROCKS: Rock[] = [
         id: 2,
         timeSpan: 1,
         delta: -122,
+        credits:[
+            224
+        ],
+        debits:[
+            336
+        ],
         date: new Date(2016, 10, 2),
         baseHeight: null
     },
@@ -113,5 +124,6 @@ export const ROCKS: Rock[] = [
         delta: -248,
         date: new Date(2016, 10, 16),
         baseHeight: null
-    },
+    }
+    */
 ]

@@ -63,7 +63,7 @@ export function ControlPoints(rocks:Rock[]):{p1:[number,number],p2:[number,numbe
 	rocks[0].baseHeight = rocks[0].baseHeight || 0;
 	
     for (let i = 1; i < rocks.length; i++){
-        rocks[i].baseHeight = /*rocks[i].baseHeight ||*/ rocks[i-1].baseHeight + rocks[i-1].delta; 
+        rocks[i].baseHeight = /*rocks[i].baseHeight ||*/ rocks[i-1].baseHeight + rocks[i-1].delta;
     }
     let Ky = rocks.map(r => r.baseHeight);
 	let ts = 0;

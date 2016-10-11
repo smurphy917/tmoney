@@ -1,13 +1,5 @@
-<!--div class="outer-container">
-    <div class="inner-container"-->
-        <div class="content">
-            <rock (click)="selectRock(rock)" [verticalBuffer]="verticalBuffer" [floor]="floor" [scale]="scale" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [rocks]="rocks" [rock]="rock"></rock>
-        </div>
-        <div *ngIf="selectedRockIndex>=0" class="input">
-            <label>Rock Delta</label><input type="number" [(ngModel)]="rocks[selectedRockIndex].delta">
-        </div>
-        <div>{{JSON.stringify(rocks)}}</div>
-    <!--/div>
-    <div class="window">
-    </div>
-</div-->
+<div class="header-block"></div>
+<div class="content">
+    <rock (animationTrigger)="animationTrigger($event)" (click)="selectRock(rock)" [verticalBuffer]="verticalBuffer" [ceiling]="ceiling" [floor]="floor" [scale]="scale" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [rocks]="rocks" [rock]="rock"></rock>
+</div>
+<rock-editor [rock]="rocks[selectedRockIndex]" (redraw)="redraw()"></rock-editor>

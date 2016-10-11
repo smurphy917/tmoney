@@ -15,9 +15,10 @@ var curve_function_1 = require('./curve.function');
 var hill_component_1 = require('./hill.component');
 var vertScale = 20;
 var horizScale = 40;
-var animationTimeMs = 300;
+var animationTimeMs = 200;
 var RockComponent = (function () {
     function RockComponent() {
+        this.animationTrigger = new core_1.EventEmitter();
         this.path = "M0 0 H40";
         this.scaleX = horizScale;
         this.init = false;
@@ -36,30 +37,25 @@ var RockComponent = (function () {
         this.path = this.animateToPath;
         this.animateToPath = "";
     };
-    Object.defineProperty(RockComponent.prototype, "canvasHeight", {
-        get: function () {
-            return (2 * this.verticalBuffer) + Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta) - this.floor;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RockComponent.prototype, "canvasOrigin", {
-        get: function () {
-            return -(this.verticalBuffer + Math.max(this.rock.baseHeight, this.rock.baseHeight + this.rock.delta));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RockComponent.prototype, "height", {
-        get: function () {
-            return this.canvasHeight * this.scale;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    /*
+    get canvasHeight():number{
+        return (2 * this.verticalBuffer) + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta) - this.floor;
+    }
+
+    get canvasOrigin():number{
+        return -(this.verticalBuffer + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta));
+    }
+
+    get height():number{
+        return this.canvasHeight * this.scale;
+    }
+    */
     RockComponent.prototype.draw = function () {
         var _this = this;
+        //console.debug("Drawing rock: " + this.rock.id);
         var Snap = require('snapsvg');
+        var mina = Snap.mina || function () { };
+        console.debug("Rock (" + this.rock.id + ") delta: " + this.rock.delta);
         var lMin = (hill_component_1.CURVE_POINTS - 1) / 2;
         var index = this.rocks.findIndex(function (r) { return r.id === _this.rock.id; });
         var localRocks = this.rocks.slice(index > lMin - 1 ? index - lMin : 0, index + lMin + 1);
@@ -81,11 +77,48 @@ var RockComponent = (function () {
         var M = [0, startY];
         var C3 = [maxX, maxY];
         var newPath = "M" + M.join(' ') + ' C' + scaledCtrlPts.p1.join(' ') + ', ' + scaledCtrlPts.p2.join(' ') + ', ' + C3.join(' ');
+        var newCanvasHeight = (2 * this.verticalBuffer + this.ceiling - this.floor); //(2 * this.verticalBuffer) + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta) - this.floor;
+        var newCanvasOrigin = -(this.verticalBuffer + this.ceiling); //-(this.verticalBuffer + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta));
+        var newHeight = newCanvasHeight * this.scale;
+        console.debug("Rock: " + this.rock.id);
+        console.debug("\tInputs (buffer/baseHeight/delta/floor): " + [this.verticalBuffer, this.rock.baseHeight, this.rock.delta, this.floor].join(" / "));
+        console.debug("\tNew origin: " + newCanvasOrigin);
+        console.debug("\tNew height: " + newCanvasHeight);
         var self = this;
-        Snap(this.pathElem.nativeElement).animate({
-            d: newPath
-        }, animationTimeMs, mina.easeout, function () {
-            self.path = newPath;
+        if (!this.snapPath) {
+            this.snapPath = Snap(this.pathElem.nativeElement);
+        }
+        if (!this.snapSVG) {
+            this.snapSVG = Snap(this.svgElem.nativeElement);
+        }
+        var animationElements = [
+            this.snapPath,
+            this.snapSVG
+        ];
+        var animations = [[
+                { d: newPath },
+                animationTimeMs,
+                mina.easeout,
+                function () {
+                    self.path = newPath;
+                }
+            ], [
+                {
+                    viewBox: '0 ' + newCanvasOrigin + ' ' + self.rock.timeSpan * self.scaleX + ' ' + newCanvasHeight,
+                    height: newHeight
+                },
+                animationTimeMs,
+                mina.easeout,
+                function () {
+                    self.canvasHeight = newCanvasHeight;
+                    self.canvasOrigin = newCanvasOrigin;
+                    self.height = newHeight;
+                }
+            ]];
+        this.animationTrigger.emit({
+            rockId: self.rock.id,
+            animationElements: animationElements,
+            animations: animations
         });
     };
     RockComponent.prototype.ngOnChanges = function () {
@@ -116,9 +149,17 @@ var RockComponent = (function () {
         __metadata('design:type', Number)
     ], RockComponent.prototype, "verticalBuffer", void 0);
     __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RockComponent.prototype, "animationTrigger", void 0);
+    __decorate([
         core_1.ViewChild("rockPath"), 
         __metadata('design:type', core_1.ElementRef)
     ], RockComponent.prototype, "pathElem", void 0);
+    __decorate([
+        core_1.ViewChild("rockSVG"), 
+        __metadata('design:type', core_1.ElementRef)
+    ], RockComponent.prototype, "svgElem", void 0);
     RockComponent = __decorate([
         core_1.Component({
             selector: 'rock',

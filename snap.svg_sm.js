@@ -1,20 +1,20 @@
-// Snap.svg 0.4.1
-//
+// Snap.svg 0.4.0
+// 
 // Copyright (c) 2013 – 2015 Adobe Systems Incorporated. All rights reserved.
-//
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// build: 2015-04-13
+// 
+// build: 2015-04-07
 
 // Copyright (c) 2013 Adobe Systems Incorporated. All rights reserved.
 // 
@@ -2750,7 +2750,7 @@ Snap.plugin(function (Snap, Element, Paper, glob, Fragment) {
             if (!Snap._.rgTransform.test(tstr)) {
                 tstr = Snap._.svgTransform2string(tstr);
             } else {
-                tstr = Str(tstr).replace(/\.{3}|\u2026/g, el._.transform || "");
+                tstr = Str(tstr).replace(/\.{3}|\u2026/g, el._.transform || E);
             }
             if (is(tstr, "array")) {
                 tstr = Snap.path ? Snap.path.toString.call(tstr) : Str(tstr);
@@ -3050,6 +3050,7 @@ Snap.plugin(function (Snap, Element, Paper, glob, Fragment) {
      = (Element) result of query selection
     \*/
     elproto.select = function (query) {
+        query = Str(query).replace(/([^\\]):/g, "$1\\:");
         return wrap(this.node.querySelector(query));
     };
     /*\
@@ -3443,7 +3444,7 @@ Snap.plugin(function (Snap, Element, Paper, glob, Fragment) {
         if (attrs instanceof Animation) {
             callback = attrs.callback;
             easing = attrs.easing;
-            ms = attrs.dur;
+            ms = easing.dur;
             attrs = attrs.attr;
         }
         var fkeys = [], tkeys = [], keys = {}, from, to, f, eq,
@@ -6900,9 +6901,9 @@ Snap.plugin(function (Snap, Element, Paper, glob) {
         return this.forEach(function (el, i) {
             eve.once("snap.animcreated." + el.id, handler);
             if (each) {
-                args[i] && Snap(el).animate.apply(Snap(el), args[i]); //SM 10/7/16 - changed to allow for passing a native element in a set.
+                args[i] && Snap(el).animate.apply(Snap(el), args[i]); //SM - Changed 10/7/2016--to handle when called with native elements.
             } else {
-                Snap(el).animate(attrs, ms, easing, callbacker); //SM 10/7/16 - changed to allow for passing a native element in a set.
+                Snap(el).animate(attrs, ms, easing, callbacker);
             }
         });
     };
