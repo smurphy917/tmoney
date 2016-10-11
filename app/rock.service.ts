@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Rock } from './rock';
+import { Rock, Transaction } from './rock';
 import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
@@ -15,33 +15,31 @@ export class RockService{
         let result: Rock[] = new Array<Rock>(),
             startDate = new Date(2016,10,1);
         for (let i=1;i<=count;i++){
-            let deets = this.generateRockDetails(),
-                r = new Rock();
+            let r = this.generateRock();
             r.id = i;
-            r.credits = deets.credits;
-            r.debits = deets.debits;
             r.date = new Date(startDate.setDate(startDate.getDate() + 1));
-            r.timeSpan = 1;
             result.push(r);
         }
         return result;
     }
-    generateRockDetails():{debits:number[],credits:number[]}{
-        let details:{debits:number[],credits:number[]} = {
-            debits:[],
-            credits:[]
-        };
+    generateRock():Rock{
+        let r = new Rock();
+        r.timeSpan = 1;
         let MAX_TRANS = 5,
             MAX_AMT = 1000,
             numDebits = Math.round(Math.random() * MAX_TRANS),
-            numCredits = Math.round(Math.random() * MAX_TRANS);
+            numCredits = Math.round(Math.random() * MAX_TRANS),
+            credits = new Array<Transaction>(),
+            debits = new Array<Transaction>();
         for(let i=0;i<numDebits;i++){
-            details.debits.push(Math.round((Math.random() * MAX_AMT)*100)/100);
+            debits.push(new Transaction(i,Math.round((Math.random() * MAX_AMT)*100)/100));
         }
-        for (let i=0;i<numCredits;i++){
-            details.credits.push(Math.round((Math.random() * MAX_AMT)*100)/100);
+        for(let i=0;i<numCredits;i++){
+            credits.push(new Transaction(i,Math.round((Math.random() * MAX_AMT)*100)/100));
         }
-        return details;
+        r.credits = credits;
+        r.debits = debits;
+        return r;
     }
 
 }

@@ -5,14 +5,14 @@
     <div *ngIf="rock.credits" class="credits">
         <label>Income</label>
         <ul>
-            <li *ngFor="let credit of rock.credits;let i = index;">
-                <div class="open-editing" *ngIf="editingType === 'credit' && editingIndex === i">
-                    <input [(ngModel)]="rock.credits[i]" type="number"/>
+            <li *ngFor="let credit of rock.credits">
+                <div class="open-editing" *ngIf="editingTransaction===credit">
+                    <input [(ngModel)]="editingTransaction.value" type="number"/>
                     <a href="#" (click)="save()">Save</a>
                 </div>
-                <div class="open-editing" *ngIf="editingType !== 'credit' || editingIndex !== i">
-                    <a href="#" (click)="edit('credit',i)">Edit</a>
-                    <span>{{credit | currency}}</span>
+                <div class="open-editing" *ngIf="editingTransaction!==credit">
+                    <a href="#" (click)="edit(credit)">Edit</a>
+                    <span>{{credit.value | currency}}</span>
                 </div>
             </li>
         </ul>
@@ -20,19 +20,21 @@
     <div *ngIf="rock.debits" class="debits">
         <label>Expenses</label>
         <ul>
-            <li *ngFor="let debit of rock.debits;let i = index;">
-                <div class="open-editing" *ngIf="editingType === 'debit' && editingIndex === i">
-                    <input [(ngModel)]="rock.debits[i]" type="number"/>
+            <li *ngFor="let debit of rock.debits">
+                <div class="open-editing" *ngIf="editingTransaction === debit">
+                    <input [(ngModel)]="editingTransaction.value" type="number"/>
                     <a href="#" (click)="save()">Save</a>
                 </div>
-                <div class="open-editing" *ngIf="editingType !== 'debit' || editingIndex !== i">
-                    <a href="#" (click)="edit('debit',i)">Edit</a>
-                    <span>{{debit | currency}}</span>
+                <div class="open-editing" *ngIf="editingTransaction !== debit">
+                    <a href="#" (click)="edit(debit)">Edit</a>
+                    <span>{{debit.value | currency}}</span>
                 </div>
             </li>
         </ul>
     </div>
     <div class="summary">
+        <label>Starting:</label><span>{{rock.baseHeight | currency}}</span>
         <label>Net:</label><span>{{rock.delta | currency}}</span>
+        <label>Ending:</label><span>{{rock.baseHeight + rock.delta | currency}}</span>
     </div>
 </div>

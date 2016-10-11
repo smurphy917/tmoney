@@ -13,18 +13,14 @@ var rock_1 = require('./rock');
 var RockEditorComponent = (function () {
     function RockEditorComponent() {
         this.redraw = new core_1.EventEmitter();
-        this.editingType = "";
-        this.editingIndex = -1;
         this.save = function () {
             //save the data
             this.redraw.emit();
-            this.editingType = "";
-            this.editingIndex = -1;
+            this.editingTransaction = null;
         };
     }
-    RockEditorComponent.prototype.edit = function (type, index) {
-        this.editingType = type;
-        this.editingIndex = index;
+    RockEditorComponent.prototype.edit = function (trans) {
+        this.editingTransaction = trans;
     };
     __decorate([
         core_1.Input(), 

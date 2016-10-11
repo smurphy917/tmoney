@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Rock } from './rock';
+import { Rock, Transaction } from './rock';
 
 @Component({
     selector: 'rock-editor',
@@ -12,17 +12,14 @@ export class RockEditorComponent{
     @Output()
     redraw = new EventEmitter();
 
-    editingType:string="";
-    editingIndex:number=-1;
+    editingTransaction:Transaction;
 
     save = function(){
         //save the data
         this.redraw.emit();
-        this.editingType = "";
-        this.editingIndex = -1;
+        this.editingTransaction = null;
     }
-    edit(type:string,index:number){
-        this.editingType = type;
-        this.editingIndex = index;
+    edit(trans:Transaction){
+        this.editingTransaction = trans;
     }
 }

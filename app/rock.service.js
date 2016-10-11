@@ -19,29 +19,26 @@ var RockService = (function () {
     RockService.prototype.generateRocks = function (count) {
         var result = new Array(), startDate = new Date(2016, 10, 1);
         for (var i = 1; i <= count; i++) {
-            var deets = this.generateRockDetails(), r = new rock_1.Rock();
+            var r = this.generateRock();
             r.id = i;
-            r.credits = deets.credits;
-            r.debits = deets.debits;
             r.date = new Date(startDate.setDate(startDate.getDate() + 1));
-            r.timeSpan = 1;
             result.push(r);
         }
         return result;
     };
-    RockService.prototype.generateRockDetails = function () {
-        var details = {
-            debits: [],
-            credits: []
-        };
-        var MAX_TRANS = 5, MAX_AMT = 1000, numDebits = Math.round(Math.random() * MAX_TRANS), numCredits = Math.round(Math.random() * MAX_TRANS);
+    RockService.prototype.generateRock = function () {
+        var r = new rock_1.Rock();
+        r.timeSpan = 1;
+        var MAX_TRANS = 5, MAX_AMT = 1000, numDebits = Math.round(Math.random() * MAX_TRANS), numCredits = Math.round(Math.random() * MAX_TRANS), credits = new Array(), debits = new Array();
         for (var i = 0; i < numDebits; i++) {
-            details.debits.push(Math.round((Math.random() * MAX_AMT) * 100) / 100);
+            debits.push(new rock_1.Transaction(i, Math.round((Math.random() * MAX_AMT) * 100) / 100));
         }
         for (var i = 0; i < numCredits; i++) {
-            details.credits.push(Math.round((Math.random() * MAX_AMT) * 100) / 100);
+            credits.push(new rock_1.Transaction(i, Math.round((Math.random() * MAX_AMT) * 100) / 100));
         }
-        return details;
+        r.credits = credits;
+        r.debits = debits;
+        return r;
     };
     RockService = __decorate([
         core_1.Injectable(), 

@@ -59,7 +59,7 @@ export class HillComponent implements OnInit{
     }
 
     redraw(){
-
+        
     }
     
     animate(){
