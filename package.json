@@ -25,7 +25,6 @@
     "angular2-in-memory-web-api": "0.0.14",
     "bootstrap": "^3.3.6",
     "web-animations-js": "",
-    "snapsvg":"",
     "jquery":""
   },
   "devDependencies": {

@@ -5,12 +5,12 @@
 (function(global) {
   // map tells the System loader where to look for things
   var map = {
-    'app':                        'app/script', // 'dist',
-    '@angular':                   'node_modules/@angular',
-    'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
-    'rxjs':                       'node_modules/rxjs',
-    'snapsvg':                    'node_modules/snapsvg',
-    'jquery':                     'node_modules/jquery'
+    'app':                        '../app/script', // 'dist',
+    '@angular':                   '../node_modules/@angular',
+    'angular2-in-memory-web-api': '../node_modules/angular2-in-memory-web-api',
+    'rxjs':                       '../node_modules/rxjs',
+    'snapsvg':                    '../ext/snapsvg',
+    'jquery':                     '../node_modules/jquery'
   };
   // packages tells the System loader how to load when no filename and/or no extension
   var packages = {

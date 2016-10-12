@@ -31,9 +31,9 @@ export class HillComponent implements OnInit{
     rockAnimationElems:Element[] = new Array<Element>();
 
     get ceiling(){
-        let base = this.rocks[0].baseHeight || 0,
-        ceiling = base + this.rocks[0].delta,
-        max = ceiling;
+        let base:number = this.rocks[0].baseHeight || 0,
+            ceiling:number = base + this.rocks[0].delta,
+            max:number = ceiling;
         Object.values(this.rocks).forEach(function(r){
             ceiling = ceiling + r.delta;
             max = Math.max(max,ceiling);
