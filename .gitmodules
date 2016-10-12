@@ -1,0 +1,3 @@
+[submodule "ext/snap.svg"]
+	path = ext/snap.svg
+	url = https://github.com/smurphy917/snap.svg
