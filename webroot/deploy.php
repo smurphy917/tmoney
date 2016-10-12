@@ -11,11 +11,14 @@
 	$commands = array(
 		'echo $PWD',
 		'whoami',
+		'cd /home/ec2-user/proj/tmoney',
 		'git pull',
 		'git status',
 		'git submodule sync',
 		'git submodule update',
 		'git submodule status',
+		'docker-compose up -d',
+		'cp -f deploy.php /var/www/html'
 	);
 
 	// Run the commands for output
