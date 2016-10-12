@@ -155,11 +155,11 @@ var RockComponent = (function () {
     ], RockComponent.prototype, "animationTrigger");
     __decorate([
         core_1.ViewChild("rockPath"), 
-        __metadata('design:type', core_1.ElementRef)
+        __metadata('design:type', (typeof (_a = typeof core_1.ElementRef !== 'undefined' && core_1.ElementRef) === 'function' && _a) || Object)
     ], RockComponent.prototype, "pathElem");
     __decorate([
         core_1.ViewChild("rockSVG"), 
-        __metadata('design:type', core_1.ElementRef)
+        __metadata('design:type', (typeof (_b = typeof core_1.ElementRef !== 'undefined' && core_1.ElementRef) === 'function' && _b) || Object)
     ], RockComponent.prototype, "svgElem");
     RockComponent = __decorate([
         core_1.Component({
@@ -171,6 +171,7 @@ var RockComponent = (function () {
         __metadata('design:paramtypes', [])
     ], RockComponent);
     return RockComponent;
+    var _a, _b;
 })();
 exports.RockComponent = RockComponent;
 //# sourceMappingURL=rock.component.js.map
