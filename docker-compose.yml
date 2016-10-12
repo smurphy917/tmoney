@@ -2,7 +2,6 @@ version: '2'
 
 services:
   httpd:
-    build: .
     image: httpd:latest
     volumes:
       - ./webroot:/usr/local/apache2/htdocs/
