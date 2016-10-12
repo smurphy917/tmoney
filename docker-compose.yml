@@ -1,12 +1,12 @@
 version: '2'
 
 services:
-  httpd:
+  tmoney:
+    build: ./dockerfiles/tmoney
     image: httpd:latest
     volumes:
       - ./webroot:/usr/local/apache2/htdocs/
       - ./app:/usr/local/apache2/htdocs/app
-      - ./node_modules:/usr/local/apache2/htdocs/node_modules
       - ./src:/usr/local/apache2/htdocs/src
       - ./ext:/usr/local/apache2/htdocs/ext
     ports:
