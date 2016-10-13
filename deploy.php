@@ -11,7 +11,7 @@
 	$commands = array(
 		'echo $PWD',
 		'whoami',
-		'cd /home/ec2-user/proj/tmoney/',
+		'printenv',
 		'git pull',
 		'git status',
 		'git submodule sync',
@@ -22,6 +22,7 @@
 	);
 
 	// Run the commands for output
+	chdir("/home/ec2-user/proj/tmoney/");
 	$output = '';
 	foreach($commands AS $command){
 		// Run it
