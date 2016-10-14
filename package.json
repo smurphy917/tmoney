@@ -1,6 +1,7 @@
 {
-  "name": "angular2-sandbox",
+  "name": "tmoney",
   "version": "1.0.0",
+  "repository": "smurphy917/tmoney",
   "scripts": {
     "postinstall": "typings install",
     "typings": "typings"
