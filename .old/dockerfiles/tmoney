@@ -1,0 +1,20 @@
+FROM node:4.6.0
+
+MAINTAINER Samuel Murphy <sam@samueljmurphy.com>
+
+#RUN useradd --user-group --create-home --shell /bin/false app &&\
+#    npm install --global npm@3.10.8
+RUN npm install --global npm@3.10.8
+
+#ENV HOME=/home/app
+
+#COPY package.json npm-shrinkwrap.json $HOME/tmoney/
+#RUN chown -R app:app $HOME/*
+
+COPY package.json npm-shrinkwrap.json /usr/share/nginx/html/
+
+#USER app
+#WORKDIR $HOME/tmoney
+WORKDIR /usr/share/nginx/html
+RUN npm install
+#VOLUME /home/app/tmoney --name=web

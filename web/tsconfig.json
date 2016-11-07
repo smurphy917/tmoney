@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true
+    //"outDir": "script/",
+    //"watch": true
+  },
+  "include": [
+    "src/**/*",
+    "./vendor.ts",
+    "./server.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "ext/*"
+  ],
+  "awesomeTypescriptLoaderOptions":{
+    "useWebpackText": true
+  }
+}

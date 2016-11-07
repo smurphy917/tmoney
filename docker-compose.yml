@@ -2,20 +2,13 @@ version: '2'
 
 services:
   tmoney:
-    build: ./dockerfiles/tmoney
-    image: httpd:latest
+    build:
+      context: .
+    container_name: tmoney
     volumes:
-      - ./webroot:/usr/local/apache2/htdocs/
-      - ./app:/usr/local/apache2/htdocs/app
-      - ./src:/usr/local/apache2/htdocs/src
-      - ./ext:/usr/local/apache2/htdocs/ext
+      - ./web:/home/app/web/
+      - /home/app/web/node_modules
     ports:
+      - "8080:8080"
       - "80:80"
-  npm:
-    image: treyjones/npm:latest
-    volumes:
-      - ./:/npm
-  tsc:
-    image: treyjones/tsc:latest
-    volumes:
-      - ./:/tsc
+      - "443:443"

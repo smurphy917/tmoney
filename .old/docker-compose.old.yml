@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  tmoney:
+    build: ./dockerfiles/tmoney
+    image: httpd:latest
+    volumes:
+      - ./webroot:/usr/local/apache2/htdocs/
+      - ./app:/usr/local/apache2/htdocs/app
+      - ./src:/usr/local/apache2/htdocs/src
+      - ./ext:/usr/local/apache2/htdocs/ext
+    ports:
+      - "80:80"
+  npm:
+    image: treyjones/npm:latest
+    volumes:
+      - ./:/npm
+  tsc:
+    image: treyjones/tsc:latest
+    volumes:
+      - ./:/tsc
