@@ -15,7 +15,8 @@
   "include": [
     "src/**/*",
     "./vendor.ts",
-    "./server.ts"
+    "./server.ts",
+    "./polyfills.ts"
   ],
   "exclude": [
     "node_modules",

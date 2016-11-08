@@ -11,12 +11,12 @@ export class RockService{
         private http: Http
     ){}
 
-    generateRocks(count:number):Rock[]{
+    generateRocks(count:number, startId = 0):Rock[]{
         let result: Rock[] = new Array<Rock>(),
-            startDate = new Date(2016,10,1);
+            startDate = new Date(2016,10,1+startId);
         for (let i=1;i<=count;i++){
             let r = this.generateRock();
-            r.id = i;
+            r.id = startId + i;
             r.date = new Date(startDate.setDate(startDate.getDate() + 1));
             result.push(r);
         }

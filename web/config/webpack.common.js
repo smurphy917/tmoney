@@ -49,11 +49,12 @@ module.exports = {
 
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
-      name: ['app', 'vendor', 'polyfills']
+      names: ['app', 'vendor', 'polyfills']
     }),
 
     new HtmlWebpackPlugin({
-      template: './index.html'
+      template: './index.html',
+      chunksSortOrder: 'dependency'
     })
   ]
 };

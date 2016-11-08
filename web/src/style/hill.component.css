@@ -62,8 +62,11 @@ div.outer-container{
 rock{
   display:block;
   flex-shrink: 1;
+  position: relative;
 }
 
 div.container{
   width: 800px;
+  overflow-x: scroll;
+  border: 1px solid red;
 }

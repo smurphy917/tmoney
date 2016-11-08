@@ -1,6 +1,8 @@
 #date{
     width: 100%;
     font-size: 7pt;
+    position: absolute;
+    bottom:0;
 }
 #outline{
     border: 1px solid black;

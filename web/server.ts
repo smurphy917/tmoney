@@ -11,8 +11,12 @@ if(isDev){
     let webpackHotMiddleware = require("webpack-hot-middleware");
     let config = require("./webpack.config.js");
     let compiler = webpack(config); 
-    app.use(webpackMiddleware(compiler));
-    app.use(webpackHotMiddleware(compiler));
+    app.use(webpackMiddleware(compiler,{
+        noInfo: false, publicPath: config.output.publicPath
+    }));
+    app.use(webpackHotMiddleware(compiler, {
+        log: console.log, path:'/__webpack_hmr', heartbeat: 10 * 1000
+    }));
 }else{
     //use nginx
     //TODO: implement

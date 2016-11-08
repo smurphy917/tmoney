@@ -32,7 +32,7 @@ export class HillComponent implements OnInit{
 
     get ceiling(){
         let base:number = this.rocks[0].baseHeight || 0,
-            ceiling:number = base + this.rocks[0].delta,
+            ceiling:number = base,
             max:number = ceiling;
         Object.values(this.rocks).forEach(function(r){
             ceiling = ceiling + r.delta;
@@ -119,7 +119,7 @@ export class HillComponent implements OnInit{
     localRocks(rocks:Rock[],i:number){
         let lMin = (CURVE_POINTS - 1)/2
         /*
-        let arr = new Array<Rock>();
+        let arr = new Array<Rock>();s
         if(i > lMin - 1){
             for(let j = 0; j < CURVE_POINTS; j++){
                 arrr = 
@@ -200,6 +200,39 @@ export class HillComponent implements OnInit{
         require("jquery");
         $(".content").draggable();
         */
-        this.rocks = this.rockService.generateRocks(20);
+        this.rocks = this.rockService.generateRocks(40);
     }
+
+    appendRocksRight(){
+        let newRocks = this.rockService.generateRocks(10,this.rocks[this.rocks.length - 1].id + 1);
+        this.rocks = this.rocks.concat(newRocks);
+    }
+
+    removeRocksLeft(){
+        this.rocks = this.rocks.slice(10);
+    }
+
+    handleScroll(event:UIEvent){
+        //let scrollPct = event.target.scrollLeft / (event.target.scrollWidth - event.target.clientWidth);
+        let self = this,
+            handling = false;
+        if(!handling){
+            let target = <Element>event.target;
+            let scrollDiff = target.scrollWidth - target.clientWidth - target.scrollLeft;
+            let scrollFactor = target.scrollWidth / target.clientWidth;
+            requestAnimationFrame(function(){
+                if(scrollDiff < 120){
+                    self.appendRocksRight();
+                }
+                if(scrollFactor > 5){
+                    self.removeRocksLeft();
+                }
+                handling = false;
+            });
+            handling = true;
+        }
+        
+        
+    }
+
 }

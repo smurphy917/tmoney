@@ -7,7 +7,7 @@ import { ArraySum } from './utils.functions';
 
 const vertScale = 20;
 const horizScale = 40;
-const animationTimeMs = 200;
+const animationTimeMs = 300;
 
 @Component({
     selector: 'rock',
@@ -84,12 +84,12 @@ export class RockComponent implements OnChanges{
         let Snap = require('snapsvg');
         let mina = Snap.mina || function(){};
 
-        console.debug("Rock (" + this.rock.id + ") delta: " + this.rock.delta);
+        //console.debug("Rock (" + this.rock.id + ") delta: " + this.rock.delta);
 
-        let lMin = (CURVE_POINTS - 1)/2
-        let index = this.rocks.findIndex(r => r.id === this.rock.id);
-        let localRocks = this.rocks.slice(index > lMin - 1 ? index - lMin : 0, index + lMin + 1);
-        index = localRocks.findIndex(r => r.id === this.rock.id);
+        let lMin = (CURVE_POINTS - 1)/2 //2
+        let index = this.rocks.findIndex(r => r.id === this.rock.id); // 41
+        let localRocks = this.rocks.slice(index > lMin - 1 ? index - lMin : 0, index + lMin + 1); // 39,44
+        index = localRocks.findIndex(r => r.id === this.rock.id); // 2
         let controlPts = ControlPoints(localRocks);
         let scaledCtrlPts = {
             p1: [
@@ -112,10 +112,12 @@ export class RockComponent implements OnChanges{
         let newCanvasOrigin:number = -(this.verticalBuffer + this.ceiling);//-(this.verticalBuffer + Math.max(this.rock.baseHeight,this.rock.baseHeight + this.rock.delta));
         let newHeight:number = newCanvasHeight * this.scale;
 
+        /*
         console.debug("Rock: " + this.rock.id);
         console.debug("\tInputs (buffer/baseHeight/delta/floor): " + [this.verticalBuffer,this.rock.baseHeight,this.rock.delta,this.floor].join(" / "));
         console.debug("\tNew origin: " + newCanvasOrigin);
         console.debug("\tNew height: " + newCanvasHeight);
+        */
 
         var self = this;
 

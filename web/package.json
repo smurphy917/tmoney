@@ -6,7 +6,7 @@
     "url": "git+https://github.com/smurphy917/tmoney.git"
   },
   "scripts": {
-    "start": "",
+    "start": "node server.ts",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail"
   },
@@ -67,5 +67,6 @@
   "main": "src/main.ts",
   "keywords": [],
   "author": "",
-  "private": true
+  "private": true,
+  "types": "d.ts"
 }
