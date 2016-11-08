@@ -7,39 +7,35 @@ import 'rxjs/add/operator/toPromise';
 @Injectable()
 export class RockService{
 
+    private rocksUrl = "app/rocks";
+    public TO_RIGHT = "__TO_RIGHT__";
+    public TO_LEFT = "__TO_LEFT__";
+
     constructor(
         private http: Http
     ){}
 
-    generateRocks(count:number, startId = 0):Rock[]{
-        let result: Rock[] = new Array<Rock>(),
-            startDate = new Date(2016,10,1+startId);
-        for (let i=1;i<=count;i++){
-            let r = this.generateRock();
-            r.id = startId + i;
-            r.date = new Date(startDate.setDate(startDate.getDate() + 1));
-            result.push(r);
-        }
-        return result;
+    getRocks(count=40, startId?:number, direction?:string):Promise<Rock[]>{
+        let query = new Array<string>();
+        if(count)
+            query.push("size=" + count);
+        if (startId)
+            query.push("sId=" + startId);
+        if (direction)
+            query.push("inc=" + (direction==this.TO_RIGHT).toString())
+        let qStr:string;
+        if(query)
+            qStr = "?" + query.join("&")
+        console.debug("GETTING ROCKS AT URL: " + this.rocksUrl + qStr);
+        return this.http.get(this.rocksUrl + qStr)
+            .toPromise()
+            .then(response => response.json().data as Rock[])
+            .catch(this.handleError);
     }
-    generateRock():Rock{
-        let r = new Rock();
-        r.timeSpan = 1;
-        let MAX_TRANS = 5,
-            MAX_AMT = 1000,
-            numDebits = Math.round(Math.random() * MAX_TRANS),
-            numCredits = Math.round(Math.random() * MAX_TRANS),
-            credits = new Array<Transaction>(),
-            debits = new Array<Transaction>();
-        for(let i=0;i<numDebits;i++){
-            debits.push(new Transaction(i,Math.round((Math.random() * MAX_AMT)*100)/100));
-        }
-        for(let i=0;i<numCredits;i++){
-            credits.push(new Transaction(i,Math.round((Math.random() * MAX_AMT)*100)/100));
-        }
-        r.credits = credits;
-        r.debits = debits;
-        return r;
+
+    handleError(error:Error){
+        console.error('An error occurred', error);
+        return Promise.reject(error.message || error);
     }
 
 }

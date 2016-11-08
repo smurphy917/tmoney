@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { RockComponent } from './rock.component'
 import { Rock } from './rock.definition';
 import { ROCKS } from './rocks'
 import { RockService } from './rock.service';
 import { RockEditorComponent } from './rockEditor.component';
+import { Observable } from 'rxjs/Observable';
 
 let Snap = require("snapsvg")
 
@@ -29,6 +30,7 @@ export class HillComponent implements OnInit{
     rockAnimationIds:number[] = new Array<number>();
     rockAnimations:any[] = new Array<any>();
     rockAnimationElems:Element[] = new Array<Element>();
+    scrollStream = new EventEmitter();
 
     get ceiling(){
         let base:number = this.rocks[0].baseHeight || 0,
@@ -200,15 +202,44 @@ export class HillComponent implements OnInit{
         require("jquery");
         $(".content").draggable();
         */
-        this.rocks = this.rockService.generateRocks(40);
+        this.rockService.getRocks(40)
+            .then(rocks => this.rocks = rocks as Rock[])
+            .catch(err => console.error("Error receiving rocks",err));
+        
+        let self = this;
+        this.scrollStream
+            .debounceTime(400)
+            .map(
+                function(o:{width:number,cWidth:number,left:number}){
+                    return {
+                        doAddRocksRight: (o.width - o.cWidth - o.left) < 120,
+                        doRemoveRocksLeft: (o.width / o.cWidth) > 6
+                    };
+                }
+            ).subscribe(
+                function handleScroll(o){
+                    console.log("handleScroll");
+                    console.log(o);
+                    if(o.doAddRocksRight){
+                        return self.rockService.getRocks(10,self.rocks[self.rocks.length - 1].id,self.rockService.TO_RIGHT)
+                            .then(function(newRocks:Rock[]){self.rocks = self.rocks.concat(newRocks as Rock[])});
+                    }
+                },
+                function error(err){
+                    console.error("Error",err);
+                }
+            )
     }
 
     appendRocksRight(){
-        let newRocks = this.rockService.generateRocks(10,this.rocks[this.rocks.length - 1].id + 1);
-        this.rocks = this.rocks.concat(newRocks);
+        console.log("adding 10 rocks right...");
+        this.rockService.getRocks(10,this.rocks[this.rocks.length - 1].id,this.rockService.TO_RIGHT)
+            .then(newRocks => this.rocks = this.rocks.concat(newRocks))
+            .catch(err => console.error("Error appending right",err));
     }
 
     removeRocksLeft(){
+        console.log("removing 10 rocks...");
         this.rocks = this.rocks.slice(10);
     }
 

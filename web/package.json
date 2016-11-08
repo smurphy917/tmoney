@@ -23,7 +23,7 @@
     "@angular/upgrade": ">= 2.1",
     "@types/core-js": "^0.9.34",
     "@types/node": "^6.0.45",
-    "angular2-in-memory-web-api": ">= 0.0.21",
+    "angular-in-memory-web-api": ">= 0.0.21",
     "bootstrap": "^3.3.6",
     "core-js": ">=2.4",
     "jquery": ">=1.8",

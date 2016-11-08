@@ -11,7 +11,7 @@ for(var k in commonConfig.entry){
   devEntry[k] = [commonConfig.entry[k],hmrPath];
 }
 
-var res = webpackMerge(commonConfig, {
+module.exports = webpackMerge(commonConfig, {
   devtool: 'cheap-module-eval-source-map',
 
   entry: {
@@ -40,6 +40,3 @@ var res = webpackMerge(commonConfig, {
   debug: true
 
 });
-
-console.log(res);
-module.exports = res;
