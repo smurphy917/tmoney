@@ -57,7 +57,8 @@
     "webpack-dev-middleware": "~1.8",
     "webpack-hot-middleware": "~2.13",
     "webpack-merge": "^0.14.0",
-    "typescript": ">= 2.0"
+    "typescript": ">= 2.0",
+    "@angular/compiler-cli": "^2.1.2"
   },
   "description": "This is where the readme will go",
   "bugs": {

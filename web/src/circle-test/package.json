@@ -1,0 +1,15 @@
+{
+  "name": "circle-test",
+  "version": "0.0.1",
+  "description": "Infinitely scrolling chart angular2 module",
+  "module": "src/circle-test.module",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'building...' && ../../node_modules/.bin/ngc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {},
+  "author": "SJM",
+  "license": "ISC",
+  "devDependencies": {}
+}

@@ -9,7 +9,7 @@ export class InMemoryDataService implements InMemoryDbService{
     
     createDb(){
         let rocks = new Array<Rock>();
-        rocks = Rock.generateRocks(100);
+        rocks = Rock.generateRocks(300);
         return {rocks};
     }
 

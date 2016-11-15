@@ -10,8 +10,11 @@ import { HillComponent } from './hill.component';
 import { RockComponent } from './rock.component';
 import { RockEditorComponent } from './rockEditor.component';
 
+import { InfiniteChartModule } from './infinite-chart';
+
 @NgModule({
   imports: [
+    InfiniteChartModule,
     BrowserModule,
     HttpModule,
     FormsModule,
@@ -21,7 +24,7 @@ import { RockEditorComponent } from './rockEditor.component';
     AppComponent, 
     HillComponent, 
     RockComponent, 
-    RockEditorComponent 
+    RockEditorComponent
   ],
   bootstrap: [ AppComponent ]
 })

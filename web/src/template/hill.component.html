@@ -1,7 +1,8 @@
 <div class="header-block"></div>
-<div class="container test test2" (scroll)="scrollStream.next({left: $event.target.scrollLeft, cWidth: $event.target.clientWidth, width: $event.target.scrollWidth})">
+<div #scrollContainer class="container test test2"><!-- (scroll)="scrollStream.next({left: $event.target.scrollLeft, cWidth: $event.target.clientWidth, width: $event.target.scrollWidth})"-->
     <div class="content">
-        <rock (animationTrigger)="animationTrigger($event)" (click)="selectRock(rock)" [verticalBuffer]="verticalBuffer" [ceiling]="ceiling" [floor]="floor" [scale]="scale" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [rocks]="rocks" [rock]="rock"></rock>
+        <!--rock (animationTrigger)="animationTrigger($event)" (click)="selectRock(rock)" [verticalBuffer]="verticalBuffer" [ceiling]="ceiling" [floor]="floor" [scale]="scale" [ngStyle]="{'width': rock.timeSpan * 40}" *ngFor="let rock of rocks; let i = index;" [rocks]="rocks" [rock]="rock"></rock-->
+        <infinite-chart [input]="chartData"></infinite-chart>
     </div>
 </div>
 <rock-editor *ngIf="selectedRockIndex > 0 && rocks[selectedRockIndex]" [rock]="rocks[selectedRockIndex]" (redraw)="redraw()"></rock-editor>

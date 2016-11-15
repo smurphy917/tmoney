@@ -5,9 +5,7 @@ import { Rock } from './rock.definition';
 import { ROCKS } from './rocks'
 import { RockService } from './rock.service';
 import { RockEditorComponent } from './rockEditor.component';
-import { Observable, Subscriber } from 'rxjs';
-
-import { InfiniteChartComponent, InfiniteChartInput, InfiniteChartConfig } from './infinite-chart';
+import { Observable } from 'rxjs/Observable';
 
 let Snap = require("snapsvg")
 
@@ -18,12 +16,12 @@ const CONTAINER_HEIGHT = 200;
     selector: 'the-hill',
     templateUrl: 'template/hill.component.html',
     styleUrls: ['style/hill.component.css'],
-    entryComponents: [RockEditorComponent]
+    entryComponents: [RockComponent, RockEditorComponent]
 })
 
 export class HillComponent implements OnInit{
 
-    constructor(private rockService:RockService, ){}
+    constructor(private rockService:RockService){}
 
     JSON = JSON;
     rocks: Rock[];// = ROCKS;
@@ -33,8 +31,6 @@ export class HillComponent implements OnInit{
     rockAnimations:any[] = new Array<any>();
     rockAnimationElems:Element[] = new Array<Element>();
     scrollStream = new EventEmitter();
-
-    chartData:InfiniteChartInput;
 
     @ViewChild("scrollContainer") container: ElementRef;
 
@@ -70,21 +66,16 @@ export class HillComponent implements OnInit{
         
     }
     
-    animate = new Subscriber<{element:ElementRef, to:{}}>(function(o){
-        //animate the new element or buffer or whatever...
-        console.log(o);
-    });/*{
+    animate(){
         //console.debug("Animation triggered");
         //console.debug("Elements:"); console.debug(this.rockAnimationElems);
         //console.debug("Animations:"); console.debug(this.rockAnimations);
         //let Snap = require("snapsvg");
-        /*
         let set = Snap(this.rockAnimationElems);
         set.animate(this.rockAnimations);
         this.rockAnimationElems = new Array<Element>();
         this.rockAnimations = new Array<any>();
         this.rockAnimationIds = new Array<number>();
-        */
         /*
         for (let a of this.rockAnimationElems){
             for (let b of a){
@@ -101,8 +92,8 @@ export class HillComponent implements OnInit{
         console.log(animations);
         console.log(this.rockAnimationElems);
         set.animate(animations);
-        *//*
-    }*/
+        */
+    }
 
     animationTrigger(event:any){
         //console.debug("Animation Trigger Fired: ");
@@ -115,7 +106,7 @@ export class HillComponent implements OnInit{
         }
         this.rockAnimationIds.push(event.rockId);
         if (this.rockAnimationIds.length === this.rocks.length){ //2 events per rock
-            //this.animate();
+            this.animate();
         }
     }
 
@@ -213,7 +204,6 @@ export class HillComponent implements OnInit{
         require("jquery");
         $(".content").draggable();
         */
-        /*
         this.rockService.getRocks(40)
             .then(rocks => this.rocks = rocks as Rock[])
             .catch(err => console.error("Error receiving rocks",err));
@@ -265,29 +255,6 @@ export class HillComponent implements OnInit{
                 console.log("addRocksLeft complete");
             }
         );
-        */
-        console.debug("InfiniteChartConfig");
-        console.log(InfiniteChartConfig);
-        this.chartData = {
-            data: this.rockService.getRocks(40)
-                .then(rocks => rocks.map(rock =>
-                    ({
-                        id:rock.id, 
-                        point:{
-                            x:rock.id,
-                            y:rock.baseHeight + rock.delta
-                        },
-                        componentData:rock
-                    })
-                ))
-                .catch(err => console.error("Error receiving rocks",err)),
-            config:{
-                displayType: 'horizontal',
-                curveType: 'bezier',
-                xScale: 40,
-                changeHandler: this.animate
-            }
-        };
     }
 
     appendRocksRight(){

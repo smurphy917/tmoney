@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true
+    //"outDir": "script/",
+    //"watch": true
+  },
+  "include": [
+    "./**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "ext/*",
+    "./**/*.d.ts",
+    "./src/old/*"
+  ],
+  "awesomeTypescriptLoaderOptions":{
+    "useWebpackText": true
+  },
+  "angularCompilerOptions":{
+    "skipMetadataEmit":false,
+    "genDir": "./aot"
+  }
+}
