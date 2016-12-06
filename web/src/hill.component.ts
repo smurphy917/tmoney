@@ -7,9 +7,10 @@ import { RockService } from './rock.service';
 import { RockEditorComponent } from './rockEditor.component';
 import { Observable, Subscriber } from 'rxjs';
 
-import { InfiniteChartComponent, InfiniteChartInput, InfiniteChartConfig } from './infinite-chart';
+import { InfiniteChartInput, InfiniteDataElement } from './infinite-chart';
 
-let Snap = require("snapsvg")
+let Snap = require("snapsvg");
+let mina = Snap.mina;
 
 export const CURVE_POINTS = 5;
 const CONTAINER_HEIGHT = 200;
@@ -17,10 +18,8 @@ const CONTAINER_HEIGHT = 200;
 @Component({
     selector: 'the-hill',
     templateUrl: 'template/hill.component.html',
-    styleUrls: ['style/hill.component.css'],
-    entryComponents: [RockEditorComponent]
+    styleUrls: ['style/hill.component.css']
 })
-
 export class HillComponent implements OnInit{
 
     constructor(private rockService:RockService, ){}
@@ -33,7 +32,10 @@ export class HillComponent implements OnInit{
     rockAnimations:any[] = new Array<any>();
     rockAnimationElems:Element[] = new Array<Element>();
     scrollStream = new EventEmitter();
+    chartChanges = new EventEmitter();
+    animationTimeMs = 500;
 
+    //chartData:{data:{},config:{}};
     chartData:InfiniteChartInput;
 
     @ViewChild("scrollContainer") container: ElementRef;
@@ -42,7 +44,7 @@ export class HillComponent implements OnInit{
         let base:number = this.rocks[0].baseHeight || 0,
             ceiling:number = base,
             max:number = ceiling;
-        Object.values(this.rocks).forEach(function(r){
+        [...this.rocks.values()].forEach(function(r){
             ceiling = ceiling + r.delta;
             max = Math.max(max,ceiling);
         });
@@ -51,7 +53,7 @@ export class HillComponent implements OnInit{
     
     get floor(){
         let floor = this.rocks[0].baseHeight || 0, minFloor = 0;
-        Object.values(this.rocks).forEach(function(r){
+        [...this.rocks.values()].forEach(function(r){
             floor = floor + r.delta;
             minFloor = Math.min(minFloor,floor);
         });
@@ -70,9 +72,33 @@ export class HillComponent implements OnInit{
         
     }
     
-    animate = new Subscriber<{element:ElementRef, to:{}}>(function(o){
+    animate = new Subscriber<[{element:ElementRef, to:{}, data:{id:number}}]>(changes => {
         //animate the new element or buffer or whatever...
-        console.log(o);
+        let elements = new Array<HTMLElement>();
+        let animations = new Array<any[]>();
+        //console.log(changes)
+        for (let ea of changes){
+            elements.push(ea.element.nativeElement);
+            animations.push([
+                ea.to,
+                this.animationTimeMs,
+                mina.easeout,
+                function(){
+                    for (let k in ea.to){
+                        ea.element.nativeElement.setAttribute(k,ea.to[k]);
+                    }
+                }
+            ]);
+        }
+        Snap(elements).animate(animations);
+
+        /*
+        for(let ea of changes){
+            for(let k in ea.to){
+                ea.element.nativeElement.setAttribute(k,ea.to[k]);
+            }
+        }
+        */
     });/*{
         //console.debug("Animation triggered");
         //console.debug("Elements:"); console.debug(this.rockAnimationElems);
@@ -266,40 +292,101 @@ export class HillComponent implements OnInit{
             }
         );
         */
-        console.debug("InfiniteChartConfig");
-        console.log(InfiniteChartConfig);
+        //console.debug("InfiniteChartConfig");
+        //console.log(InfiniteChartConfig);
+        /*
+        this.chartChanges
+            .subscribe(this.animate)
+        */
         this.chartData = {
-            data: this.rockService.getRocks(40)
-                .then(rocks => rocks.map(rock =>
-                    ({
-                        id:rock.id, 
-                        point:{
-                            x:rock.id,
-                            y:rock.baseHeight + rock.delta
-                        },
-                        componentData:rock
-                    })
-                ))
-                .catch(err => console.error("Error receiving rocks",err)),
+            data: this.getChartData(this.rockService.getRocks(100)),
             config:{
                 displayType: 'horizontal',
                 curveType: 'bezier',
-                xScale: 40,
-                changeHandler: this.animate
+                xWindow: 40, //how many x units to show without scrolling
+                height: 200,
+                width: 800,
+                bufferedChangeHandler: this.animate
             }
         };
     }
 
-    appendRocksRight(){
+    getChartData(rocks?: Promise<Rock[]>):Promise<Map<number,InfiniteDataElement>>{
+        if(!rocks){
+            rocks = Promise.resolve(this.rocks);
+        }
+        return rocks.then(rocks => {
+            this.rocks = rocks;
+            let innerRocks = new Map(rocks.map(this.mapRock));
+            innerRocks.set(
+                -1,
+                {
+                    id:-1,
+                    point: this.leftPoint(),
+                    componentData:{}
+                }
+            );
+            return innerRocks;
+        })
+        .catch(err => console.error("Error receiving rocks",err));
+    }
+
+    leftPoint():{x:Date,y:number}{
+        let leftMost = this.rocks[0].date;
+        return {
+            x: new Date(leftMost.getFullYear(),leftMost.getMonth(),leftMost.getDate() - 1),
+            y: 0
+        }
+    }
+
+    mapRock(rock:Rock):[number,InfiniteDataElement]{
+        return [
+            rock.id,
+            {
+                id: rock.id,
+                point:{
+                    x: rock.date,
+                    dy: rock.delta,
+                },
+                componentData:rock
+            }
+        ];
+    }
+
+    appendRocksRight(id?:number){
         console.log("adding 10 rocks right...");
-        this.rockService.getRocks(10,this.rocks[this.rocks.length - 1].id,this.rockService.TO_RIGHT)
-            .then(newRocks => this.rocks = this.rocks.concat(newRocks))
+        this.chartData = {
+            data: this.getChartData(this.rockService.getRocks(10,id || this.rocks[this.rocks.length - 1].id,this.rockService.TO_RIGHT).then(newRocks => this.rocks.concat(newRocks))),
+            config: this.chartData.config
+        }
+        /*
+        this.rockService.getRocks(10,id || this.rocks[this.rocks.length - 1].id,this.rockService.TO_RIGHT)
+            .then(newRocks => {
+                this.rocks = this.rocks.concat(newRocks)
+                this.chartData = {
+                    data: this.rocks.map(this.mapRock),
+                    config: this.chartData.config
+                };
+            })
             .catch(err => console.error("Error appending right",err));
+        */
     }
 
     removeRocksLeft(){
         console.log("removing 10 rocks...");
         this.rocks = this.rocks.slice(10);
+        this.chartData = {
+            data: this.getChartData(),
+            config: this.chartData.config
+        };
+    }
+
+    handleDataEvent(event:{action:string,lastId:number}){
+        if(event.action==="add_right"){
+            this.appendRocksRight(event.lastId || null);
+        }else if(event.action==="remove_left"){
+            this.removeRocksLeft();
+        }
     }
 
     handleScroll(event:UIEvent){

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -9,7 +9,7 @@
     "removeComments": false,
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true
-    //"outDir": "script/",
+    //"outDir": "dist/",
     //"watch": true
   },
   "include": [
@@ -23,6 +23,9 @@
     "ext/*"
   ],
   "awesomeTypescriptLoaderOptions":{
-    "useWebpackText": true
+    "useWebpackText": true,
+    "target": "es5",
+    "useBabel": false,
+    "useCache": true
   }
 }

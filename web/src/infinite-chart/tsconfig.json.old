@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -12,20 +12,11 @@
     //"outDir": "script/",
     //"watch": true
   },
-  "include": [
-    "./**/*"
-  ],
   "exclude": [
     "node_modules/*",
-    "ext/*",
-    "./**/*.d.ts",
-    "./src/old/*"
+    "./**/*.d.ts"
   ],
   "awesomeTypescriptLoaderOptions":{
     "useWebpackText": true
-  },
-  "angularCompilerOptions":{
-    "skipMetadataEmit":false,
-    "genDir": "./aot"
   }
 }

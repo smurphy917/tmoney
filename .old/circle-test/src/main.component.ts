@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'circle-test',
@@ -8,9 +8,6 @@ import { Component, OnInit } from '@angular/core';
     </svg>
     `
 })
-export class MainComponent implements OnInit {
+export class MainComponent {
     circles = [1,2,3,4,5];
-    ngOnInit(){
-        console.debug("test");
-    }
 }

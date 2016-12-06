@@ -8,6 +8,5 @@ import { RockService } from './rock.service';
     entryComponents: [HillComponent],
     providers: [RockService]
 })
-
 export class AppComponent{
 }

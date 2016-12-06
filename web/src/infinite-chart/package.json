@@ -6,7 +6,9 @@
   "module": "index.js",
   "scripts": {
     "build": "echo 'building...' && ../../node_modules/.bin/ngc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc" : "../../node_modules/.bin/tsc",
+    "tsc:w" : "../../node_modules/.bin/tsc -w"
   },
   "dependencies": {},
   "author": "SJM",

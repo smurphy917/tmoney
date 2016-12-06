@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { MainComponent } from './main.component';
 import { SubComponent } from './sub.component';
 
-NgModule({
+@NgModule({
     declarations: [
         MainComponent,
         SubComponent

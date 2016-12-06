@@ -1,7 +1,7 @@
 "use strict";
 
 let express = require("express");
-let app = express();
+let app = typeof express === 'function' ?  express() : express.createServer();
 
 const isDev = process.env.NODE_ENV !== "production";
 

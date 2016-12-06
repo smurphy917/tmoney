@@ -16,7 +16,8 @@ module.exports = {
     root: [
         path.resolve(__dirname,'src'),
         path.resolve(__dirname,'..','node_modules'),
-        path.resolve(__dirname,'..','ext')
+        path.resolve(__dirname,'..','ext'),
+        path.resolve(__dirname,'src','infinite-chart')
     ]
   },
 
@@ -53,7 +54,7 @@ module.exports = {
     }),
 
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: './webpack-index.html',
       chunksSortOrder: 'dependency'
     })
   ]
