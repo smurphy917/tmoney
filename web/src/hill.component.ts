@@ -7,7 +7,7 @@ import { RockService } from './rock.service';
 import { RockEditorComponent } from './rockEditor.component';
 import { Observable, Subscriber } from 'rxjs';
 
-import { InfiniteChartInput, InfiniteDataElement } from './infinite-chart';
+//import { InfiniteChartInput, InfiniteDataElement } from './infinite-chart';
 
 let Snap = require("snapsvg");
 let mina = Snap.mina;
@@ -22,10 +22,12 @@ const CONTAINER_HEIGHT = 200;
 })
 export class HillComponent implements OnInit{
 
-    constructor(private rockService:RockService, ){}
+    constructor(private rockService:RockService){}
 
     JSON = JSON;
     rocks: Rock[];// = ROCKS;
+    //New new
+    
     selectedRockIndex: number = -1;
     height: number;
     rockAnimationIds:number[] = new Array<number>();
@@ -36,7 +38,7 @@ export class HillComponent implements OnInit{
     animationTimeMs = 500;
 
     //chartData:{data:{},config:{}};
-    chartData:InfiniteChartInput;
+    //chartData:InfiniteChartInput;
 
     @ViewChild("scrollContainer") container: ElementRef;
 
@@ -298,6 +300,7 @@ export class HillComponent implements OnInit{
         this.chartChanges
             .subscribe(this.animate)
         */
+        /*
         this.chartData = {
             data: this.getChartData(this.rockService.getRocks(100)),
             config:{
@@ -309,8 +312,9 @@ export class HillComponent implements OnInit{
                 bufferedChangeHandler: this.animate
             }
         };
+        */
     }
-
+    /*
     getChartData(rocks?: Promise<Rock[]>):Promise<Map<number,InfiniteDataElement>>{
         if(!rocks){
             rocks = Promise.resolve(this.rocks);
@@ -330,7 +334,7 @@ export class HillComponent implements OnInit{
         })
         .catch(err => console.error("Error receiving rocks",err));
     }
-
+    */
     leftPoint():{x:Date,y:number}{
         let leftMost = this.rocks[0].date;
         return {
@@ -338,7 +342,7 @@ export class HillComponent implements OnInit{
             y: 0
         }
     }
-
+    /*
     mapRock(rock:Rock):[number,InfiniteDataElement]{
         return [
             rock.id,
@@ -352,7 +356,8 @@ export class HillComponent implements OnInit{
             }
         ];
     }
-
+    */
+    /*
     appendRocksRight(id?:number){
         console.log("adding 10 rocks right...");
         this.chartData = {
@@ -369,9 +374,10 @@ export class HillComponent implements OnInit{
                 };
             })
             .catch(err => console.error("Error appending right",err));
-        */
+        *//*
     }
-
+    */
+    /*
     removeRocksLeft(){
         console.log("removing 10 rocks...");
         this.rocks = this.rocks.slice(10);
@@ -380,7 +386,8 @@ export class HillComponent implements OnInit{
             config: this.chartData.config
         };
     }
-
+    */
+    /*
     handleDataEvent(event:{action:string,lastId:number}){
         if(event.action==="add_right"){
             this.appendRocksRight(event.lastId || null);
@@ -388,7 +395,8 @@ export class HillComponent implements OnInit{
             this.removeRocksLeft();
         }
     }
-
+    */
+    /*
     handleScroll(event:UIEvent){
         //let scrollPct = event.target.scrollLeft / (event.target.scrollWidth - event.target.clientWidth);
         let self = this,
@@ -411,5 +419,6 @@ export class HillComponent implements OnInit{
         
         
     }
+    */
 
 }

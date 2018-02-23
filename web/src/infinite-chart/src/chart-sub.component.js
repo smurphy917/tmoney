@@ -18,32 +18,30 @@ let InfiniteChartSubComponent = class InfiniteChartSubComponent {
         if (to) {
             this.output.emit({
                 element: this.path,
-                data: this.p,
                 to: to
             });
         }
         this.output.emit({
-            element: this.point,
-            data: this.p,
+            element: this.circle,
             to: {
-                cx: (this.p.point.x.valueOf() - this.min_x) * this.minorScale,
-                cy: -this.p.point.y,
-                r: 80
+                cx: (this.point[0]) * this.xScale,
+                cy: -this.point[1] * this.yScale,
+                r: 40
             }
         });
     }
     get to() {
         let subpaths = new Array();
         let left_x;
-        if (this.p.point && this.p.point.left_x) {
-            left_x = (this.p.point.left_x.valueOf() - this.min_x) * this.minorScale;
+        if (this.point && this.leftPoint) {
+            left_x = (this.leftPoint[0]) * this.xScale;
         }
         else {
             return null;
         }
-        let x = (this.p.point.x.valueOf() - this.min_x) * this.minorScale;
-        subpaths.push("M" + left_x + " " + -this.p.point.left_y);
-        subpaths.push("L" + x + " " + -this.p.point.y);
+        let x = (this.point[0]) * this.xScale;
+        subpaths.push("M" + left_x + " " + -(this.leftPoint[1] * this.yScale));
+        subpaths.push("L" + x + " " + -(this.point[1] * this.yScale));
         let to = {
             d: subpaths.join(" ")
         };
@@ -52,8 +50,12 @@ let InfiniteChartSubComponent = class InfiniteChartSubComponent {
 };
 __decorate([
     core_1.Input(), 
-    __metadata('design:type', Object)
-], InfiniteChartSubComponent.prototype, "p", void 0);
+    __metadata('design:type', Array)
+], InfiniteChartSubComponent.prototype, "point", void 0);
+__decorate([
+    core_1.Input(), 
+    __metadata('design:type', Array)
+], InfiniteChartSubComponent.prototype, "leftPoint", void 0);
 __decorate([
     core_1.Output(), 
     __metadata('design:type', Object)
@@ -65,11 +67,15 @@ __decorate([
 __decorate([
     core_1.ViewChild("circle_elem"), 
     __metadata('design:type', core_1.ElementRef)
-], InfiniteChartSubComponent.prototype, "point", void 0);
+], InfiniteChartSubComponent.prototype, "circle", void 0);
 __decorate([
     core_1.Input(), 
     __metadata('design:type', Number)
-], InfiniteChartSubComponent.prototype, "minorScale", void 0);
+], InfiniteChartSubComponent.prototype, "xScale", void 0);
+__decorate([
+    core_1.Input(), 
+    __metadata('design:type', Number)
+], InfiniteChartSubComponent.prototype, "yScale", void 0);
 __decorate([
     core_1.Input(), 
     __metadata('design:type', Number)
@@ -77,11 +83,7 @@ __decorate([
 InfiniteChartSubComponent = __decorate([
     core_1.Component({
         selector: 'g[infinite-sub]',
-        template: `
-            <svg:path #path_elem stroke="black" stroke-width="50" fill="transparent" [attr.id]="'path_' + p.id"></svg:path>
-            <svg:circle #circle_elem [attr.id]="'circle_' + p.id"></svg:circle>
-            <svg:foreignObject></svg:foreignObject>
-    `
+        template: require('./template/chart-sub.component.html')
     }), 
     __metadata('design:paramtypes', [])
 ], InfiniteChartSubComponent);

@@ -1,0 +1,15 @@
+.nav {
+    margin-bottom: 20px;
+}
+
+.nav-item {
+    width: 100%;
+}
+
+.nav-item + .nav-item {
+    margin-left: 0;
+}
+
+.nav-link {
+    border-radius: 0;
+}

@@ -1,25 +1,25 @@
 import { Component, OnChanges, Input, Output, ViewChild, EventEmitter, ElementRef } from '@angular/core';
-import { InfiniteDataElement } from './chart.component';
+import { DataPoint } from './chart.component';
 
 @Component({
     selector: 'g[infinite-sub]',
-    template:`
-            <svg:path #path_elem stroke="black" stroke-width="50" fill="transparent" [attr.id]="'path_' + p.id"></svg:path>
-            <svg:circle #circle_elem [attr.id]="'circle_' + p.id"></svg:circle>
-            <svg:foreignObject></svg:foreignObject>
-    `
+    template: require('./template/chart-sub.component.html')
 })
 export class InfiniteChartSubComponent implements OnChanges{
     @Input()
-    p:InfiniteDataElement
+    point:[number,number];
+    @Input()
+    leftPoint:[number,number];
     @Output()
-    output = new EventEmitter<{element:ElementRef, data:InfiniteDataElement, to:{}}>();
+    output = new EventEmitter<{element:ElementRef, to:{}}>();
     @ViewChild("path_elem")
     path:ElementRef
     @ViewChild("circle_elem")
-    point:ElementRef
+    circle:ElementRef;
     @Input()
-    minorScale:number;
+    xScale:number;
+    @Input()
+    yScale:number;
     @Input()
     min_x:number;
     ngOnChanges(changes?:{[key: string]:any}){
@@ -27,31 +27,29 @@ export class InfiniteChartSubComponent implements OnChanges{
         if(to){
             this.output.emit({
                 element: this.path,
-                data: this.p,
                 to: to
             });
         }
         this.output.emit({
-            element: this.point,
-            data: this.p,
+            element: this.circle,
             to: {
-                cx:(this.p.point.x.valueOf() - this.min_x) * this.minorScale,
-                cy:-this.p.point.y,
-                r:80
+                cx:(this.point[0]) * this.xScale,
+                cy:-this.point[1] * this.yScale,
+                r:40
             }
         })
     }
     get to():any{
         let subpaths = new Array<string>();
         let left_x:number;
-        if(this.p.point && this.p.point.left_x){
-            left_x = (this.p.point.left_x.valueOf() - this.min_x) * this.minorScale;
+        if(this.point && this.leftPoint){
+            left_x = (this.leftPoint[0]) * this.xScale;
         }else{
             return null;
         }
-        let x = (this.p.point.x.valueOf() - this.min_x) * this.minorScale;
-        subpaths.push("M" + left_x + " " + -this.p.point.left_y);
-        subpaths.push("L" + x + " " + -this.p.point.y);
+        let x = (this.point[0]) * this.xScale;
+        subpaths.push("M" + left_x + " " + -(this.leftPoint[1] * this.yScale));
+        subpaths.push("L" + x + " " + -(this.point[1] * this.yScale));
         let to = {
             d: subpaths.join(" ")
         };

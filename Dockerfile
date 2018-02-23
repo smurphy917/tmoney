@@ -20,7 +20,7 @@ RUN apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 573BFD6B3D8FBC64107
 	&& apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y \
         ca-certificates \
-        nginx=1.11.5-1~jessie \
+        nginx=1.11.6-1~jessie \
         nginx-module-xslt \
         nginx-module-geoip \
         nginx-module-image-filter \

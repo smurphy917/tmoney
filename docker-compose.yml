@@ -7,7 +7,7 @@ services:
     container_name: tmoney
     volumes:
       - ./web:/home/app/web/
-      - /home/app/web/node_modules
+      - /home/app/web/node_modules/
     ports:
       - "8080:8080"
       - "80:80"

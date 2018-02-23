@@ -65,3 +65,4 @@ target/
 *.xlsx
 
 .DS_Store
+web/.awcache/*

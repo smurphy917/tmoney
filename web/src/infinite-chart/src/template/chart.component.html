@@ -1,9 +1,9 @@
-<div class="infinite-container" [ngStyle]="{'width': config.width, 'height': config.height}"(scroll)="handleScroll($event)">
+<div class="infinite-container" (scroll)="handleScroll($event)"> <!--[ngStyle]="{'width': config.width, 'height': config.height}"(scroll)="handleScroll($event)"-->
     <div class="infinite-content">
-        <svg #infiniteChartSVG *ngIf="init" [attr.width]="canvasWidth" [attr.height]="config.height" preserveAspectRatio="none">
-            <path *ngIf="xScale" stroke="red" stroke-width="50" fill="transparent" [attr.d]="'M0 0 H' + (max_x - min_x) * xScale"/>
-            <path *ngFor="let guide of verticalGuides" stroke-width="50" stroke="black" [attr.d]="getGuideD(guide)"/>
-            <g infinite-sub *ngFor="let datum of dataArray; trackBy: identify" [min_x]="min_x" id="group_{{datum.id}}" [minorScale]="xScale" [p]="datum" (output)="change.emit($event);"></g>
+        <svg #infiniteChartSVG [attr.width]="viewWidth" [attr.height]="dimensions.view_minor" [attr.viewBox]="'0 ' + -(min >= 0 ? dimensions.base_minor : (max*yScale)) + ' ' + canvasWidth + ' ' + dimensions.base_minor" preserveAspectRatio="none">
+            <path *ngIf="xScale" stroke="red" stroke-width="20" fill="transparent" [attr.d]="'M0 0 H' + canvasWidth"/>
+            <!--path *ngFor="let guide of verticalGuides" stroke-width="50" stroke="black" [attr.d]="getGuideD(guide)"/-->
+            <g infinite-sub *ngFor="let datum of Array.from(data.entries()); let i = index; trackBy: identify" [xScale]="xScale" [yScale]="yScale" [point]="datum" [leftPoint]="Array.from(data.entries())[i-1] || null" (output)="childChange.emit($event)"></g> <!-- (output)="change.emit($event);"></g-->
         </svg>
     </div>
 </div>

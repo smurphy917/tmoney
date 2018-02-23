@@ -1,0 +1,11 @@
+Abstract Component - Infinite Scrolling Chart
+    -config:
+        -vertical/horizontal
+        -bezier curve, linear, scatter
+        -change Observable
+        -start state: number of points to display
+        -
+    -data store
+        - object | service
+            - points:
+                [{x:number, y:number}]

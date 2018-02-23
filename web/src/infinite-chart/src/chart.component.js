@@ -9,9 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 const core_1 = require('@angular/core');
+const infinite_chart_config_1 = require('./infinite-chart.config');
 let Snap = require("snapsvg");
 ;
-;
+class DataPoint {
+}
+exports.DataPoint = DataPoint;
+/*
+export interface InfiniteDataElement{
+    id: number,
+    point: InfinitePoint,
+    componentData: any
+}
+*/
+/*
+export interface InfiniteChart{
+    config:InfiniteChartConfig;
+    change:Observable<{element:ElementRef,to:{}}>;
+    //dataStream:Observable<{id:number, point:InfinitePoint, componentData:any}>
+    refresh(changes:{}[]):void;
+}
+*/
+/*
+export interface ChartConfig {
+    changeHandler?:Subscriber<{element:ElementRef,to:{}}> | null;
+}
+*/
 class InfiniteChartConfig {
     /**
      * Constructor
@@ -98,91 +121,161 @@ class InfiniteChartConfig {
 exports.InfiniteChartConfig = InfiniteChartConfig;
 let InfiniteChartComponent = class InfiniteChartComponent {
     constructor() {
-        this.output = new core_1.EventEmitter();
-        this.bufferedOutput = new core_1.EventEmitter();
-        this.change = new core_1.EventEmitter();
-        this.subscribed = false;
-        this.closeBuffer = new core_1.EventEmitter();
+        this.Array = Array;
         this.data = new Map();
-        this.counter = 0;
-        this.init = false;
-        this.inFlight = false;
-        this.max_y = 0;
-        this.min_y = 0;
-        this.min_x = 0;
-        this.max_x = 0;
-        this.firstChangeRun = false;
-        this.pointsShown = 40;
-        this.verticalBuffer = 0.1;
-        this.bufferCount = 0;
-        this.verticalGuides = new Array();
-        this.dirty = false;
+        /*
+        @ViewChild("infiniteChartSVG")
+        chartSVG: ElementRef;
+        */
+        this.dataRequest = new core_1.EventEmitter();
+        /*
+        @Output()
+        bufferedOutput = new EventEmitter<{element:ElementRef, to:{}}[]>();
+        config:InfiniteChartConfig;
+        change = new EventEmitter<{element:ElementRef,to:{}, data:{id:number}}>();
+        subscribed:boolean = false;
+        bufferEmit:EventEmitter<boolean>;
+        closeBuffer = new EventEmitter<boolean>();
+        data = new Map<number,InfiniteDataElement>();
+        counter = 0;
+        init = false;
+        inFlight = false;
+        max_y = 0;
+        min_y = 0;
+        min_x = 0;
+        max_x = 0;
+        firstChangeRun = false;
+        pointsShown = 40;
+        verticalBuffer = 0.1;
+        bufferCount = 0;
+        verticalGuides = new Array<{}>();
+        guideSpacing:number;
+        guideXPos:number;
+        dirty = false;
+        */
         this.xScale = 0;
-        this.dataEvent = new core_1.EventEmitter();
+        this.yScale = 0;
+        this.max = 0;
+        this.min = 0;
+        this.viewWidth = 2 * infinite_chart_config_1.CONFIG.canvasDimensions.view_major;
+        this.canvasWidth = 2 * infinite_chart_config_1.CONFIG.canvasDimensions.base_major;
+        this.dimensions = infinite_chart_config_1.CONFIG.canvasDimensions;
+        /*
+        @Output()
+        dataEvent = new EventEmitter<{}>();
+        */
+        this.childChange = new core_1.EventEmitter();
     }
-    ngOnChanges(changes) {
-        if (!this.init) {
+    ngOnChanges() {
+        /**
+         * Need to determine x scale. We will use a fixed canvas size, but need to know how many points-per.
+         */
+        let pointsInView = infinite_chart_config_1.CONFIG.canvasConfig.view_points;
+        //this.inputData.then(d => {
+        //console.debug("inputData:");
+        //console.log(this.inputData);
+        //console.log(this.inputData.length);
+        let inputData = this.translate(this.inputData);
+        //onsole.log(inputData);
+        let count = 0, start, end, min = 0, max;
+        for (let [x, y] of inputData.entries()) {
+            if (count === 0) {
+                start = x;
+                max = y;
+            }
+            else {
+                if (count < pointsInView)
+                    end = x;
+                max = (y > max ? y : max);
+            }
+            min = (y < min ? y : min);
+            count++;
+        }
+        let dataRange = end - start;
+        if (count < pointsInView) {
+            dataRange *= pointsInView / count;
+        }
+        this.xScale = infinite_chart_config_1.CONFIG.canvasDimensions.base_major / dataRange;
+        this.yScale = infinite_chart_config_1.CONFIG.canvasDimensions.base_minor / (max - min);
+        this.min = min;
+        this.max = max;
+        //console.debug("xScale: " + this.xScale + "; yScale: " + this.yScale);
+        this.data = inputData;
+        //});
+        /*
+        if(!this.init){
             this.ownInit();
         }
         console.debug("chart component ngOnChanges");
         this.inFlight = true;
-        if (this && this.init) {
+        if(this && this.init){
             Promise.resolve(this.input.data)
                 .then(data => {
-                console.debug("ngOnChanges promise then started");
-                console.log(data);
-                let newData = new Map([...data.entries()].sort((a, b) => a[1].point.x.valueOf() - b[1].point.x.valueOf()));
-                [...newData.values()].forEach((d, i, arr) => this.buildPointData(d, i, arr));
-                console.log({
-                    min_x: this.min_x,
-                    max_x: this.max_x,
-                    min_y: this.min_y,
-                    max_y: this.max_y
-                });
-                for (let d of newData) {
-                    this.data.set(d[0], d[1]);
-                }
-                //this.data = new Map<number,InfiniteDataElement>([...this.data,...newData]);
-                this.setXScale();
-                this.change.emit({
-                    element: this.chartSVG,
-                    data: {
-                        id: -101
-                    },
-                    to: {
-                        viewBox: [
-                            0,
-                            -(this.max_y + ((this.max_y - this.min_y) * this.verticalBuffer)),
-                            (this.max_x - this.min_x) * this.xScale,
-                            (this.max_y - this.min_y) * (1 + 2 * this.verticalBuffer)
-                        ].join(" ")
+                    console.debug("ngOnChanges promise then started");
+                    console.log(data);
+                    let newData = new Map<number,InfiniteDataElement>(
+                        [...data.entries()].sort((a,b) => a[1].point.x.valueOf() - b[1].point.x.valueOf())
+                    );
+                    [...newData.values()].forEach((d,i,arr) => this.buildPointData(d,i,arr));
+                    console.log({
+                        min_x:this.min_x,
+                        max_x: this.max_x,
+                        min_y: this.min_y,
+                        max_y: this.max_y
+                    });
+                    console.debug("newData: ");
+                    console.log(newData);
+                    for(let d of newData){
+                        this.data.set(d[0],d[1]);
                     }
+                    
+                    //this.data = new Map<number,InfiniteDataElement>([...this.data,...newData]);
+                    this.setXScale();
+                    this.change.emit({
+                        element:this.chartSVG,
+                        data:{
+                            id: -101
+                        },
+                        to:{
+                            viewBox: [
+                                0,
+                                -(this.max_y + ((this.max_y - this.min_y) * this.verticalBuffer)),
+                                (this.max_x - this.min_x) * this.xScale,
+                                (this.max_y - this.min_y) * (1 + 2 * this.verticalBuffer)
+                                ].join(" ")
+                        }
+                    });
+                    console.log(this.data);
+                    this.setGuides();
+                    this.inFlight = false;
+                    console.debug("ngOnChanges promise then complete");
                 });
-                console.log(this.data);
-                this.setGuides();
-                this.inFlight = false;
-                console.debug("ngOnChanges promise then complete");
-            });
         }
+        */
     }
-    get dataArray() {
+    /*
+    get dataArray(){
         return new Array(...this.data.values());
     }
+    */
     identify(i, ea) {
-        return ea.id;
+        return ea[0];
     }
-    get canvasWidth() {
+    /*
+    get canvasWidth(){
         let ratio = this.config.width / this.config.xWindow;
         return ratio * this.data.size;
     }
-    setGuides() {
+    */
+    /*
+    setGuides(){
         console.info("setting guides...");
         let numOfVerticalGuides = 5;
-        if (!this.guideSpacing) {
-            this.guideSpacing = (Math.round(this.config.xWindow / (numOfVerticalGuides + 1)) * ((this.max_x - this.min_x) / (this.data.size - 1)));
+        if(!this.guideSpacing){
+            this.guideSpacing = (Math.round(this.config.xWindow / (numOfVerticalGuides + 1)) * ((this.max_x - this.min_x)/(this.data.size - 1)));
             this.guideXPos = this.min_x + this.guideSpacing;
         }
-        while (this.guideXPos < this.max_x) {
+        while(this.guideXPos < this.max_x){
             this.verticalGuides.push({
                 xPos: this.guideXPos
             });
@@ -191,43 +284,49 @@ let InfiniteChartComponent = class InfiniteChartComponent {
         console.info("guides set...");
         console.log(this.verticalGuides);
     }
-    getGuideD(g) {
-        return ["M" + (g.xPos - this.min_x) * this.xScale + " " + -(this.min_y - this.verticalBuffer * (this.max_y - this.min_y)), "V-" + (1 + 2 * this.verticalBuffer) * (this.max_y - this.min_y)].join(' ');
+    */
+    /*
+    getGuideD(g:{xPos:number}){
+        return ["M" + (g.xPos - this.min_x)*this.xScale + " " + -(this.min_y - this.verticalBuffer*(this.max_y - this.min_y)), "V-" + (1+2*this.verticalBuffer) * (this.max_y - this.min_y)].join(' ');
     }
-    buildPointData(data, i, allData) {
-        if (i === 0) {
+    */
+    /*
+    buildPointData(data:InfiniteDataElement, i:number, allData:InfiniteDataElement[]){
+        if(i===0){
+            //data.point.left_y = data.point.left_y || 0;
+            //data.point.left_x = data.point.left_x || 0;
+        }else{
+            data.point.left_x= allData[i-1].point.x;
+            data.point.left_y = allData[i-1].point.y;
         }
-        else {
-            data.point.left_x = allData[i - 1].point.x;
-            data.point.left_y = allData[i - 1].point.y;
-        }
-        if (!data.point.hasOwnProperty("y") && data.point.hasOwnProperty("dy")) {
+        if(!data.point.hasOwnProperty("y") && data.point.hasOwnProperty("dy")){
             data.point.y = data.point.left_y + data.point.dy;
         }
-        if (i === 0) {
+        if(i===0){
             this.max_y = data.point.y;
             this.min_y = data.point.y;
             this.max_x = data.point.x.valueOf();
             this.min_x = data.point.x.valueOf();
-        }
-        else {
+        }else{
             this.max_y = data.point.y > this.max_y ? data.point.y : this.max_y;
             this.min_y = data.point.y < this.min_y ? data.point.y : this.min_y;
         }
-        if (i === allData.length - 1) {
+        if(i===allData.length - 1){
             this.max_x = data.point.x.valueOf();
         }
     }
-    setXScale() {
+    */
+    /*
+    setXScale(){
         let yHeight = (this.max_y - this.min_y) * (1 + (2 * this.verticalBuffer));
         let xRange = this.max_x - this.min_x;
-        let ratio = this.config.width / this.config.height;
+        let ratio = this.config.width/this.config.height;
         let scaledWidth = ratio * yHeight;
         let rawXScale = scaledWidth / this.config.xWindow;
-        let rangeUnit = xRange / (this.data.size - 1);
+        let rangeUnit = xRange / (this.data.size - 1)
         let xScale = rawXScale / rangeUnit;
         console.debug("xScale: " + xScale);
-        if (xScale < 0) {
+        if(xScale < 0){
             console.log({
                 yHeight: yHeight,
                 xRange: xRange,
@@ -239,115 +338,71 @@ let InfiniteChartComponent = class InfiniteChartComponent {
         }
         this.xScale = xScale;
     }
+    */
     handleScroll(event) {
+        //console.debug("handleScroll");
         let self = this;
-        if (!self.dirty) {
-            let target = event.target;
-            let scrollDiff = target.scrollWidth - target.clientWidth - target.scrollLeft;
-            let scrollFactor = target.scrollWidth / target.clientWidth;
-            requestAnimationFrame(function () {
-                if (scrollDiff < 3 * (self.config.width / self.config.xWindow)) {
-                    self.dirty = true;
-                    self.dataEvent.emit({
-                        action: 'add_right',
-                        lastId: [...self.data.values()].pop().id
-                    });
-                }
-                if (scrollFactor > 5) {
-                    self.dirty = true;
-                    self.dataEvent.emit({
-                        action: 'remove_left'
-                    });
-                }
-            });
-        }
+        //if(!self.dirty){
+        let target = event.target;
+        let scrollDiff = target.scrollWidth - target.clientWidth - target.scrollLeft;
+        let scrollFactor = target.scrollWidth / target.clientWidth;
+        //console.debug("scrollDiff: " + scrollDiff + "; scrollFactor: " + scrollFactor);
+        //console.debug("scrollWidth: " + target.scrollWidth);
+        //console.debug("clientWidth: " + target.clientWidth);
+        requestAnimationFrame(function () {
+            if (scrollDiff < 0.2 * target.clientWidth) {
+                self.dataRequest.emit({
+                    action: 'add_right',
+                    context: {
+                        last_item: self.inputData[self.inputData.length - 1]
+                    }
+                });
+            }
+            if (scrollFactor > 5) {
+                self.dataRequest.emit({
+                    action: 'remove_left'
+                });
+            }
+        });
+        //}
     }
-    ngAfterViewChecked() {
-        if (!this.inFlight && this.bufferCount) {
+    /*
+    ngAfterViewChecked(){
+        if(!this.inFlight && this.bufferCount){
             console.debug("Closing and emitting buffer...");
             this.closeBuffer.emit(true);
             this.dirty = false;
             this.bufferCount = 0;
         }
+        
     }
-    ownInit() {
-        let count = 0;
-        console.debug("chart master ngOnInit");
-        //this.refreshed.emit(false);
-        if (!this.config && this.input.config) {
-            this.config = this.input.config;
-        }
-        if (this.config && this.config.changeHandler) {
-            console.info("using provided change handler");
-            this.change.subscribe(this.config.changeHandler);
-        }
-        else if (this.config && this.config.bufferedChangeHandler) {
-            console.info("using provided buffered change handler");
-            this.change
-                .do(o => {
-                //console.debug("buffer++");
-                if (o.element === this.chartSVG) {
-                    console.debug("SVG emit");
-                    console.log(o);
-                }
-                this.bufferCount++;
-            })
-                .buffer(this.closeBuffer)
-                .subscribe(this.config.bufferedChangeHandler);
-        }
-        else {
-            console.info("using default handler");
-            this.change
-                .do(o => {
-                console.log(o);
-                this.output.emit(o);
-            })
-                .buffer(this.closeBuffer)
-                .do(o => {
-                this.bufferedOutput.emit(o);
-            })
-                .subscribe(this.refresh);
-        }
-        this.init = true;
-        /*
-        if(!this.firstChangeRun){
-            this.ngOnChanges();
-        }
-        */
-    }
+    */
     ngOnInit() {
-    }
-    refresh(changes) {
-        //refresh the data
-        console.debug("refreshing...");
-        for (let ea of changes) {
-            for (let k in ea.to) {
-                ea.element.nativeElement.setAttribute(k, ea.to[k]);
+        //console.debug("chart init");
+        this.childChange
+            .subscribe((change) => {
+            for (let k in change.to) {
+                change.element.nativeElement.setAttribute(k, change.to[k]);
             }
-        }
-        //this.refreshed.emit(false);
+        });
     }
 };
 __decorate([
     core_1.Input(), 
-    __metadata('design:type', Object)
-], InfiniteChartComponent.prototype, "input", void 0);
+    __metadata('design:type', Array)
+], InfiniteChartComponent.prototype, "inputData", void 0);
 __decorate([
-    core_1.ViewChild("infiniteChartSVG"), 
-    __metadata('design:type', core_1.ElementRef)
-], InfiniteChartComponent.prototype, "chartSVG", void 0);
+    core_1.Input(), 
+    __metadata('design:type', Function)
+], InfiniteChartComponent.prototype, "translate", void 0);
 __decorate([
-    core_1.Output(), 
-    __metadata('design:type', Object)
-], InfiniteChartComponent.prototype, "output", void 0);
-__decorate([
-    core_1.Output(), 
-    __metadata('design:type', Object)
-], InfiniteChartComponent.prototype, "bufferedOutput", void 0);
+    core_1.Input(), 
+    __metadata('design:type', InfiniteChartConfig)
+], InfiniteChartComponent.prototype, "config", void 0);
 __decorate([
     core_1.Output(), 
     __metadata('design:type', Object)
-], InfiniteChartComponent.prototype, "dataEvent", void 0);
+], InfiniteChartComponent.prototype, "dataRequest", void 0);
 InfiniteChartComponent = __decorate([
     core_1.Component({
         selector: 'infinite-chart',

@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, Output, OnChanges, OnInit, EventEmitter, 
 import { Observable, Subscriber } from 'rxjs';
 
 import { InfiniteChartSubComponent } from './chart-sub.component';
+import { CONFIG } from './infinite-chart.config';
 
 let Snap = require("snapsvg");
 
@@ -13,7 +14,11 @@ export interface InfiniteChartConfigObj{
     canvasWidth?: number;
     changeHandler?: Subscriber<{element:ElementRef,to:{}}>
 };
-
+export class DataPoint{
+    public x: number;
+    public y: number;
+}
+/*
 export interface InfinitePoint{
     x:number | Date;
     y?:number;
@@ -22,30 +27,33 @@ export interface InfinitePoint{
     left_x?:number | Date;
     left_y?:number;
 };
-
+*/
 export interface InfiniteChartInput{
-    data: Map<number,InfiniteDataElement> | Promise<Map<number,InfiniteDataElement>>,
-    config:InfiniteChartConfig
+    data: DataPoint[];
+    config:InfiniteChartConfig;
 }
-
+/*
 export interface InfiniteDataElement{
     id: number,
     point: InfinitePoint,
     componentData: any
 }
-
+*/
+/*
 export interface InfiniteChart{
     config:InfiniteChartConfig;
     change:Observable<{element:ElementRef,to:{}}>;
     //dataStream:Observable<{id:number, point:InfinitePoint, componentData:any}>
     refresh(changes:{}[]):void;
 }
-
+*/
+/*
 export interface ChartConfig {
     changeHandler?:Subscriber<{element:ElementRef,to:{}}> | null;
 }
+*/
 
-export class InfiniteChartConfig implements ChartConfig{
+export class InfiniteChartConfig {//implements ChartConfig{
     /**
      * Constructor
      */
@@ -137,14 +145,23 @@ export class InfiniteChartConfig implements ChartConfig{
     template: require("./template/chart.component.html"),
     styles: [require("./style/chart.component.css")]
 })
-export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit, AfterViewChecked {
+export class InfiniteChartComponent implements /*InfiniteChart, */ OnChanges, OnInit /*, AfterViewChecked */{
     
+    Array = Array;
     @Input()
-    input:InfiniteChartInput;
+    inputData:Object[];
+    data = new Map<number,number>();
+    @Input()
+    translate:(o:Object[])=>Map<number,number>;
+    @Input()
+    config:InfiniteChartConfig;
+    /*
     @ViewChild("infiniteChartSVG")
     chartSVG: ElementRef;
+    */
     @Output()
-    output = new EventEmitter<{element:ElementRef, to:{}}>();
+    dataRequest = new EventEmitter<{action:string, context?:{}}>();
+    /*
     @Output()
     bufferedOutput = new EventEmitter<{element:ElementRef, to:{}}[]>();
     config:InfiniteChartConfig;
@@ -168,11 +185,59 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
     guideSpacing:number;
     guideXPos:number;
     dirty = false;
+    */
     xScale = 0;
+    yScale = 0;
+    max = 0;
+    min = 0;
+    viewWidth = 2 * CONFIG.canvasDimensions.view_major;
+    canvasWidth = 2 * CONFIG.canvasDimensions.base_major;
+    dimensions = CONFIG.canvasDimensions;
+    /*
     @Output()
     dataEvent = new EventEmitter<{}>();
+    */
+    childChange = new EventEmitter<{element:ElementRef, to:{}}>();
     
-    ngOnChanges(changes?:{[key:string]:any}){
+    ngOnChanges(){
+        /**
+         * Need to determine x scale. We will use a fixed canvas size, but need to know how many points-per. 
+         */
+        let pointsInView = CONFIG.canvasConfig.view_points;
+        //this.inputData.then(d => {
+            //console.debug("inputData:");
+            //console.log(this.inputData);
+            //console.log(this.inputData.length);
+            let inputData = this.translate(this.inputData);
+            //onsole.log(inputData);
+            let count = 0, start:number, end:number, min = 0, max:number;
+            for(let [x,y] of inputData.entries()){
+                if(count===0){
+                    start = x;
+                    max = y;
+                }else{
+                    if(count < pointsInView)
+                        end = x;
+                    max = (y > max ? y : max);
+                }
+                min = (y < min ? y : min);
+                count++;
+            }
+            
+            let dataRange = end - start;
+            if(count < pointsInView){
+                dataRange*=pointsInView/count;
+            }
+            this.xScale = CONFIG.canvasDimensions.base_major / dataRange;
+            this.yScale = CONFIG.canvasDimensions.base_minor / (max - min);
+            this.min = min;
+            this.max = max;
+            //console.debug("xScale: " + this.xScale + "; yScale: " + this.yScale);
+            this.data = inputData;
+        //});
+        
+
+        /*
         if(!this.init){
             this.ownInit();
         }
@@ -193,7 +258,8 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
                         min_y: this.min_y,
                         max_y: this.max_y
                     });
-                    
+                    console.debug("newData: ");
+                    console.log(newData);
                     for(let d of newData){
                         this.data.set(d[0],d[1]);
                     }
@@ -220,21 +286,25 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
                     console.debug("ngOnChanges promise then complete");
                 });
         }
+        */
     }
-
+    
+    /*
     get dataArray(){
         return new Array(...this.data.values());
     }
-
-    identify(i:number,ea:InfiniteDataElement){
-        return ea.id
+    */
+    identify(i:number,ea:[number,number]){
+        return ea[0];
     }
-
+    
+    /*
     get canvasWidth(){
         let ratio = this.config.width / this.config.xWindow;
         return ratio * this.data.size;
     }
-
+    */
+    /*
     setGuides(){
         console.info("setting guides...");
         let numOfVerticalGuides = 5;
@@ -251,11 +321,13 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
         console.info("guides set...");
         console.log(this.verticalGuides);
     }
-
+    */
+    /*
     getGuideD(g:{xPos:number}){
         return ["M" + (g.xPos - this.min_x)*this.xScale + " " + -(this.min_y - this.verticalBuffer*(this.max_y - this.min_y)), "V-" + (1+2*this.verticalBuffer) * (this.max_y - this.min_y)].join(' ');
     }
-    
+    */
+    /*
     buildPointData(data:InfiniteDataElement, i:number, allData:InfiniteDataElement[]){
         if(i===0){
             //data.point.left_y = data.point.left_y || 0;
@@ -280,7 +352,8 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
             this.max_x = data.point.x.valueOf();
         }
     }
-
+    */
+    /*
     setXScale(){
         let yHeight = (this.max_y - this.min_y) * (1 + (2 * this.verticalBuffer));
         let xRange = this.max_x - this.min_x;
@@ -302,31 +375,40 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
         }
         this.xScale = xScale;
     }
-
+    */
+    
     handleScroll(event:UIEvent){
-        let self = this
-        if(!self.dirty){
+        //console.debug("handleScroll");
+        let self = this;
+        
+        //if(!self.dirty){
             let target = <Element>event.target;
             let scrollDiff = target.scrollWidth - target.clientWidth - target.scrollLeft;
             let scrollFactor = target.scrollWidth / target.clientWidth;
+            //console.debug("scrollDiff: " + scrollDiff + "; scrollFactor: " + scrollFactor);
+            //console.debug("scrollWidth: " + target.scrollWidth);
+            //console.debug("clientWidth: " + target.clientWidth);
+            
             requestAnimationFrame(function(){
-                if(scrollDiff < 3*(self.config.width / self.config.xWindow)){
-                    self.dirty = true;
-                    self.dataEvent.emit({
+                if(scrollDiff < 0.2*target.clientWidth){
+                    self.dataRequest.emit({
                         action: 'add_right',
-                        lastId: [...self.data.values()].pop().id
+                        context: {
+                            last_item:self.inputData[self.inputData.length-1]
+                        }
                     });
                 }
                 if(scrollFactor > 5){
-                    self.dirty = true;
-                    self.dataEvent.emit({
+                    self.dataRequest.emit({
                         action: 'remove_left'
                     })
                 }
             });
-        }
+            
+        //}
+        
     }
-
+    /*
     ngAfterViewChecked(){
         if(!this.inFlight && this.bufferCount){
             console.debug("Closing and emitting buffer...");
@@ -336,7 +418,17 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
         }
         
     }
-    
+    */
+    ngOnInit(){
+        //console.debug("chart init");
+        this.childChange
+            .subscribe((change:{element:ElementRef,to:{}}) => {
+                for(let k in change.to){
+                    change.element.nativeElement.setAttribute(k,change.to[k]);
+                }
+            });
+    }
+    /*
     ownInit(){
         let count = 0;
         console.debug("chart master ngOnInit");
@@ -378,13 +470,16 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
         if(!this.firstChangeRun){
             this.ngOnChanges();
         }
-        */
+        *//*
     }
-
+    */
+    /*
     ngOnInit(){
         
         
     }
+    */
+    /*
     refresh(changes:[{element:ElementRef, to:{}, data:{id:number}}]){
         //refresh the data
         console.debug("refreshing...");
@@ -395,4 +490,5 @@ export class InfiniteChartComponent implements InfiniteChart,  OnChanges, OnInit
         }
         //this.refreshed.emit(false);
     }
+    */
 }
